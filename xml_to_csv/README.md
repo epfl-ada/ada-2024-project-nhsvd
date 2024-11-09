@@ -1,7 +1,7 @@
 ## Rust version of parse_corenlp_xml.py
 
 - Converts the nested XML files into CSVs for easier analysis with pandas etc.
-- Only `collapsed-ccprocessed-dep
+- Only `collapsed-ccprocessed-dependencies` are parsed, the other dependencies contain no additiona information.
 - ~8x faster than Python (48s vs. 6m 21s on my 8-core laptop)
 
 ### Usage
