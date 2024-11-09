@@ -97,7 +97,7 @@ def process_files(file_paths, output_dir, compressed=False):
 def main():
     parser = argparse.ArgumentParser(description="Parse XML files and save results to CSV.")
     parser.add_argument("-i", "--input-dir", type=Path, required=False, default="./data/raw/corenlp_plot_summaries/", help="Directory containing XML files")
-    parser.add_argument("-o", "--output-dir", type=Path, required=False, default="./data/processed/corenlp_plot_summaries/", help="Directory to save CSV files")
+    parser.add_argument("-o", "--output-dir", type=Path, required=False, default="./data/interim/corenlp_plot_summaries/", help="Directory to save CSV files")
     parser.add_argument("-n", "--num-files", type=int, default=None, help="Number of files to process")
     parser.add_argument("--compressed", action="store_true", help="Specify if input files are gz compressed")
     
