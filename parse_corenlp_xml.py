@@ -20,6 +20,9 @@ def parse_xml_to_csv(file_path, output_dir, compressed=False):
     root = tree.getroot()
     
     base_name = file_path.stem
+
+    if compressed:
+        base_name = base_name.split(".")[0]
     
     tokens_file = output_dir / f"tokens_{base_name}.csv"
     dependencies_file = output_dir / f"dependencies_{base_name}.csv"
