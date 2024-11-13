@@ -70,6 +70,8 @@ Our initial examination of the data revealed the following:
    - **Text Mining Approach**: Using spaCy and its PhraseMatcher tool, we detect phrases and terms related to death. We also account for negations (e.g., "did not die") to prevent false positives in death detection.
    - **Initial Results**: In our initial analysis, we identified that out of a subset of movies, 21,452 summaries contained death terms or phrases, while 20,851 did not. These results indicate that about half of the summaries involve character death, suggesting a sufficient amount of data for mortality analysis.
 
+### DUUUUUUUUUUUUC
+
 ### Mortality Index Calculation
    - We propose calculating a mortality index as the proportion of characters within each trope, genre, or actor’s filmography that die.
    - **Genre-Specific Analysis**: We will examine mortality rates across genres, hypothesizing that certain genres like horror or war may exhibit higher mortality.
