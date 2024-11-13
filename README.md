@@ -80,10 +80,10 @@ Our initial examination of the data revealed the following:
 
 ## Proposed Timeline
 
-1. **Week 1-2**: Data preprocessing and initial analysis (cleaning summaries, identifying and filtering irrelevant text).
-2. **Week 3-4**: Implement text mining for mortality detection; calculate initial mortality rates by trope and genre.
-3. **Week 5-6**: Finalize in-depth analysis and begin creating visualizations.
-4. **Week 7**: Review results, prepare final presentation, and refine documentation.
+1. **1->15th November**: Data preprocessing and initial analysis (cleaning summaries, identifying and filtering irrelevant text).
+2. **15->30th Nobember**: Implement text mining for mortality detection; calculate initial mortality rates by trope and genre.
+3. **1 ->10th December**: Finalize in-depth analysis and begin creating visualizations.
+4. **10->20th December**: Review results, prepare final presentation, and refine documentation.
 
 ## Organization within the Team
 Each team member has an assigned role to ensure efficient progress:
