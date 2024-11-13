@@ -94,5 +94,6 @@ Each team member has an assigned role to ensure efficient progress:
    - **Visualization & Presentation Specialist**: Creates visual representations of findings and structures the final presentation.
 
 ## Initial Questions for TAs
-   - Are there any recommended approaches for efficiently filtering non-relevant summaries (e.g., cast lists, reviews)?
+   - IF, ADD DATA re there any recommended approaches for efficiently filtering non-relevant summaries (e.g., cast lists, reviews)?
+   - "error handling/quantification"
    - Are we on the right track with our mortality index calculation approach, or would you suggest additional considerations for calculating mortality rates by actor and trope?
