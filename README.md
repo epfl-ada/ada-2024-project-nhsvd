@@ -94,6 +94,12 @@ Each team member has an assigned role to ensure efficient progress:
    - **Visualization & Presentation Specialist**: Creates visual representations of findings and structures the final presentation.
 
 ## Initial Questions for TAs
-   - IF, ADD DATA re there any recommended approaches for efficiently filtering non-relevant summaries (e.g., cast lists, reviews)?
-   - "error handling/quantification"
+```
+Our current methodology reveals some limitations in accurately detecting character deaths due to the complexity of natural language nuances and metadata inconsistencies:
+
+False Positive Detection: In a sentence like “Two-Face then attacks the party and nearly kills Batman,” the term “kills” is identified by our model as an indication of death. However, it cannot distinguish between “nearly kills” and “kills,” resulting in a false positive where Batman is inaccurately classified as deceased.
+Missed Detection Due to Metadata Limitations: Conversely, the only actual character death in this movie—Two-Face—is not detected because the name “Two-Face” does not appear in the character metadata for this film. This discrepancy between plot text and metadata leads to a failure to identify genuine character deaths.
+```
+   - How can we handle and quanitify  errors like this ?
+   - Are there any recommended approaches for efficiently filtering non-relevant summaries (e.g., cast lists, reviews)?
    - Are we on the right track with our mortality index calculation approach, or would you suggest additional considerations for calculating mortality rates by actor and trope?
