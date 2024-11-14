@@ -129,17 +129,17 @@ Another way to tackle this problem is simply using a LLM to decide the tropes.
 ## Proposed Timeline
 
 1. **1->15th November**: Data preprocessing and initial analysis.
-2. **15->30th Nobember**: Homework 2 and tropes clustering.
+2. **15->30th Nobember**: Homework 2, tropes clustering and death classification.
 3. **1 ->10th December**: Finalize analysis and begin creating visualizations.
 4. **10->20th December**: Review results, refine documentation and presentation.
 
 ## Organization within the Team
 Each team member has an assigned role to ensure efficient progress:
    - Samuli Näppi: Data preprocessing and code reviewing.
-   - Vsevolod Malevannyi: Character death classifcation.
+   - Vsevolod Malevannyi: Character death classification.
    - Duc-Anh Do: Tropes clustering and team coordinating.
    - Hamza Karime & Nizar Ben Mohamed: Analysis, visualization and presentation.
 
 ## Questions for TAs
-   - How can we handle and quantify the errors of dead classification?
+   - How can we quantify the errors of death classification?
    - Are we on the right track with our mortality index calculation approach, or would you suggest additional considerations for calculating mortality rates by actor and trope?
