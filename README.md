@@ -136,10 +136,9 @@ Another way to tackle this problem is simply using a LLM to decide the tropes.
 Each team member has an assigned role to ensure efficient progress:
    - Samuli Näppi: Data preprocessing and code reviewing.
    - Vsevolod Malevannyi: Character death classifcation.
-   - Hamza Karime & Nizar Ben Mohamed: Visualization and presentation.
    - Duc-Anh Do: Tropes clustering and team coordinating.
+   - Hamza Karime & Nizar Ben Mohamed: Analysis, visualization and presentation.
 
-## Initial Questions for TAs
-   - How can we handle and quantify the errors of dead classification ?
-   - Are there any recommended approaches for efficiently filtering non-relevant summaries (e.g., cast lists, reviews)?
+## Questions for TAs
+   - How can we handle and quantify the errors of dead classification?
    - Are we on the right track with our mortality index calculation approach, or would you suggest additional considerations for calculating mortality rates by actor and trope?
