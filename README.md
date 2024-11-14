@@ -90,8 +90,8 @@ This complete method is presented in `notebooks/bags_analysis.ipynb`.
     1. Create document-character pairs as input.
     2. Use the LLM to associate the pair with a binary label: dead or alive.
 - Limitation:
-    1. LLM API costs.
-    2. The result's accuracy is dependent on the prompt.
+    + LLM API costs.
+    + The result's accuracy is dependent on the prompt.
 
 This partially completed method is presented in `notebooks/extract_char_deaths_with_llm.ipynb`.
 
@@ -107,8 +107,8 @@ This is the original model used to generate `tvtropes.clusters.txt` proposed by 
     1. Associates each character with a latent persona using DPM.
     2. Soften the persona clusters to extract latent topics.
 - Limitation:
-    1. Manual alignment with well-established tropes is required.
-    2. Loss of structure as movie's summary is treated as a bag-of-words.
+    + Manual alignment with well-established tropes is required.
+    + Loss of structure as movie's summary is treated as a bag-of-words.
         
 #### B. LLM:
 
