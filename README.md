@@ -21,7 +21,7 @@ Currently, no additional datasets are required; however, we are considering the 
 
 
 ## Methods
-We follow the methods layed out by the following paper: Bamman, D., O’Connor, B., & Smith, N. A. (2013). Learning latent personas of film characters. Proceedings of the 51st Annual Meeting of the Association for Computational Linguistics (ACL), 352–361.
+We follow the methods laid out by the following paper: Bamman, D., O’Connor, B., & Smith, N. A. (2013). Learning latent personas of film characters. Proceedings of the 51st Annual Meeting of the Association for Computational Linguistics (ACL), 352–361.
 
 ### 1. Data preprocessing to generate character's bag-of-words:
 For each `.xml` in `corenlp_plot_summaries.tar`, we parse the file to extract from Named Entity Recognition (NER) the following:
@@ -59,7 +59,7 @@ This complete method is presented in `notebooks/bags_analysis.ipynb`.
     + LLM API costs.
     + The result's accuracy is dependent on the prompt.
 
-This partially completed method is presented in `notebooks/extract_char_deaths_with_llm.ipynb`.
+This partially completed method is presented in `notebooks/extract_char_deaths_with_llm.ipynb`. An output example is given in `notebooks/process_character_deaths_batch_output.ipynb`.
 
 ### 3. Creating complete tropes clusters
 `tvtropes.clusters.txt` is only an incomplete test file with extremely limited sample size. Therefore, we intend to perform our own tropes clustering using one of the methods below.
@@ -109,7 +109,7 @@ Each team member has an assigned role to ensure efficient progress:
 ## Questions for TAs
    - How can we quantify the error of death classification (since we do not have access to ground-truth)?
    - Are we on the right track with our mortality index calculation approach?
-   - Tropes clustering and death classfication can be done independent of `character.metadata.tsv`. Furthermore, almost half of the movies do not have any character in `character.metadata.tsv`. What of the following should we do?
+   - Tropes clustering and death classification can be done independent of `character.metadata.tsv`. Furthermore, almost half of the movies do not have any character in `character.metadata.tsv`. What of the following should we do?
      + Ignore character's metadata to preserve more sample across movies (no Actor-Specific Analysis).
      + Strive to perform Actor-Specific Analysis regardless of the smaller sample size for Movie-Specific Analysis.
      + Do Movie-Specific Analysis on every character found by NER, and Actor-Specific Analysis on those appeared in `character.metadata.tsv`.
