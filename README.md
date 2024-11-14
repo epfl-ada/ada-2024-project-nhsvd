@@ -16,7 +16,7 @@ The default and assumed structure of data is as follows:
         └── corenlp_plot_summaries
             └── {movie_id}.xml
 ```
-all the preprocessing scripts take `input_dir` and `output_dir` from the CLI so you can use any structure you like.
+all the preprocessing scripts take `input_dir` and `output_dir` from the CLI.
 
 ### Usage
 
@@ -32,10 +32,7 @@ all the preprocessing scripts take `input_dir` and `output_dir` from the CLI so 
    ```
    python build_char_word_bags.py
    ```
-
-Total runtime: 15-20 minutes
-
-I (Sam) wrote a Rust version of the XML parser but this is probably fast enough.
+A member(Samuli Näppi) wrote a faster Rust version of the XML parser.
 
 --------
 
@@ -51,28 +48,78 @@ The goal of this project is to investigate and examine the mortality of movie ch
 4. Are there additional attributes (such as character age, gender) that correlate with a higher mortality rate?
 ## Proposed Additional Datasets
 At this stage, we are focusing on the datasets provided:
-   - `movie.metadata.tsv`: Metadata for movies, including genres, release dates, and runtime.
-   - `character.metadata.tsv`: Information on movie characters and their associated metadata, including actor details and character descriptions.
-   - `tvtropes.clusters.txt`: Character trope classifications, which allow us to associate characters with specific types (e.g., heroes, villains).
+   - `movie.metadata.tsv`: Metadata of movies.
+   - `character.metadata.tsv`: Metadata of characters.
+   - `plot_summaries.txt`: Plot summaries of the movies.
+   - `corenlp_plot_summaries.tar`: The plot summaries run through Stanford CoreNLP pipeline (tagging, parsing, NER and coref).
 
 Currently, no additional datasets are required; however, we may consider further resources if necessary to enhance character or actor profiles. We will ensure that any additional data aligns in format and structure with the existing datasets to facilitate analysis.
 
 ## Methods
+### 1. Data preprocessing to generate character's bag-of-words:
+For each `.xml` file in `corenlp_plot_summaries.tar`, we parse the file to generate the following:
 
-### Data Preprocessing
-Our initial examination of the data revealed the following:
-   - The plot summaries contain HTML tags, references, and unclosed or mismatched tags that may interfere with text mining.
-   - Some summaries are not actual descriptions of plot events but rather cast lists, reviews, or descriptions with irrelevant information. We will need to filter these out or preprocess them to retain meaningful text.
-   - We plan to implement regular expressions and NLP libraries to remove extraneous characters and identify summaries that do not describe plot events.
+- Characters mentioned in the summary.
+- Agent Verbs: Actions characters perform.
+- Patient Verbs: Actions done to characters.
 
-### Death Term Extraction
-   - **Death-Related Keywords**: We developed a comprehensive list of death-related keywords (e.g., "die," "kill," "murder") and phrases (e.g., "pass away," "meet their end") to identify character mortality in plot summaries.
-   - **Text Mining Approach**: Using spaCy and its PhraseMatcher tool, we detect phrases and terms related to death. We also account for negations (e.g., "did not die") to prevent false positives in death detection.
-   - **Initial Results**: In our initial analysis, we identified that out of a subset of movies, 21,452 summaries contained death terms or phrases, while 20,851 did not. These results indicate that about half of the summaries involve character death, suggesting a sufficient amount of data for mortality analysis.
+We then attempt to match them with a character in `character.metadata.tsv`. Some characters like "Two-Faced" appear in the summary but not in the metadata table.
 
-### DUUUUUUUUUUUUC
+The preprocessing is documented at the start of this `README.md`.
 
-### Mortality Index Calculation
+### 2. Determining which characters died
+To classify whether a given character has died, we implemented the two methods below.
+
+#### A. Bag-of-words matching:
+
+- Feature: The character's bag-of-words
+- Approach:
+    1. Check if the character's Agent Verbs contain: died, perished, ...
+    2. Check if the character's Patient Verbs contain: killed, assassinated, ...
+- Limitation: The model is incapable of accounting for language nuances
+    + One summary contained the following "Two-Face then attacks the party and nearly kills Batman".
+    + Batman is considered dead since the model can not differentiate between "nearly kills" and "kills".
+
+This complete method is presented in `bags_analysis.ipynb`.
+
+#### B. LLM:
+
+- Feature: Movie's summary tagged with character mentions
+- Approach:
+    1. Create document-character pairs as input.
+    2. Use the LLM associates the pair with a binary label: dead or alive.
+- Limitation:
+    1. LLM API costs.
+    2. The result's accuracy is dependent on the prompt.
+
+This partially completed method is presented in `extract_char_deaths_with_llm.ipynb`.
+
+### 3. Creating complete tropes clusters
+`tvtropes.clusters.txt` is only an incomplete test file with extremely limited sample size. Therefore, we intend to perform our own tropes clustering using one of the methods below.
+
+#### A. Dirichlet Persona Model (DPM):
+
+This is the original model used to generate `tvtropes.clusters.txt` proposed by Bamman, O’Connor, & Smith in their paper: "Learning latent personas of film characters". It is a latent variable model based on Latent Dirichlet Allocation (LDA)
+
+- Feature: The character's bag-of-words
+- Approach: 
+    1. Associates each character with a latent persona using DPM.
+    2. Soften the persona clusters to extract latent topics.
+- Limitation:
+    1. Manual alignment with well-established tropes is required.
+    2. Loss of structure as movie's summary is treated as a bag-of-words.
+        
+#### B. LLM:
+
+Another way to tackle this problem is simply using a LLM to decide the tropes.
+
+- Feature: Movie's summary tagged with character mentions
+- Approach: 
+    1. Create document-character pairs as input.
+    2. Use the LLM associates the pair with a trope label among the well-established tropes.
+- Limitation: Same limitations as the LLM method in previous section
+
+### 4. Mortality Index Calculation
    - We propose calculating a mortality index as the proportion of characters within each trope, genre, or actor’s filmography that die.
    - **Genre-Specific Analysis**: We will examine mortality rates across genres, hypothesizing that certain genres like horror or war may exhibit higher mortality.
    - **Character Tropes and Attributes**: We will investigate if certain character types (e.g., mentors, villains) are more prone to death than others.
@@ -80,26 +127,19 @@ Our initial examination of the data revealed the following:
 
 ## Proposed Timeline
 
-1. **1->15th November**: Data preprocessing and initial analysis (cleaning summaries, identifying and filtering irrelevant text).
-2. **15->30th Nobember**: Implement text mining for mortality detection; calculate initial mortality rates by trope and genre.
-3. **1 ->10th December**: Finalize in-depth analysis and begin creating visualizations.
-4. **10->20th December**: Review results, prepare final presentation, and refine documentation.
+1. **1->15th November**: Data preprocessing and initial analysis.
+2. **15->30th Nobember**: Homework 2 and tropes clustering.
+3. **1 ->10th December**: Finalize analysis and begin creating visualizations.
+4. **10->20th December**: Review results, refine documentation and presentation.
 
 ## Organization within the Team
 Each team member has an assigned role to ensure efficient progress:
-   - **Project Manager**: Oversees task assignments, progress tracking, and ensures deadlines are met.
-   - **Data Collection & Preparation Specialist**: Manages data loading, cleaning, and merging across files.
-   - **NLP/Text Mining Specialist**: Develops functions for mortality detection, including keyword and phrase matching.
-   - **Data Analysis & Mortality Index Calculation**: Calculates and analyzes mortality rates by genre, trope, and actor.
-   - **Visualization & Presentation Specialist**: Creates visual representations of findings and structures the final presentation.
+   - Samuli Näppi: Data preprocessing and code reviewing.
+   - Vsevolod Malevannyi: Character death classifcation.
+   - Hamza Karime & Nizar Ben Mohamed: Visualization and presentation.
+   - Duc-Anh Do: Tropes clustering and team coordinating.
 
 ## Initial Questions for TAs
-```
-Our current methodology reveals some limitations in accurately detecting character deaths due to the complexity of natural language nuances and metadata inconsistencies:
-
-False Positive Detection: In a sentence like “Two-Face then attacks the party and nearly kills Batman,” the term “kills” is identified by our model as an indication of death. However, it cannot distinguish between “nearly kills” and “kills,” resulting in a false positive where Batman is inaccurately classified as deceased.
-Missed Detection Due to Metadata Limitations: Conversely, the only actual character death in this movie—Two-Face—is not detected because the name “Two-Face” does not appear in the character metadata for this film. This discrepancy between plot text and metadata leads to a failure to identify genuine character deaths.
-```
-   - How can we handle and quanitify  errors like this ?
+   - How can we handle and quantify the errors of dead classification ?
    - Are there any recommended approaches for efficiently filtering non-relevant summaries (e.g., cast lists, reviews)?
    - Are we on the right track with our mortality index calculation approach, or would you suggest additional considerations for calculating mortality rates by actor and trope?
