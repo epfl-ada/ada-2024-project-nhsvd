@@ -53,7 +53,8 @@ At this stage, we are focusing on the datasets provided:
    - `plot_summaries.txt`: Plot summaries of the movies.
    - `corenlp_plot_summaries.tar`: The plot summaries run through Stanford CoreNLP pipeline (tagging, parsing, NER and coref).
 
-Currently, no additional datasets are required; however, we may consider further resources if necessary to enhance character or actor profiles. We will ensure that any additional data aligns in format and structure with the existing datasets to facilitate analysis.
+Currently, no additional datasets are required; however, we are considering the potential use of IMDb (Internet Movie Database) or TMDb (The Movie Database) to enrich character and actor profiles. These sources offer extensive movie metadata, including cast information, plot details, and character descriptions, which could further enhance our analysis. If we integrate data from these sources, we will ensure it aligns in format and structure with the existing datasets to facilitate seamless analysis.
+
 
 ## Methods
 ### 1. Data preprocessing to generate character's bag-of-words:
