@@ -107,5 +107,9 @@ Each team member has an assigned role to ensure efficient progress:
    - Hamza Karime & Nizar Ben Mohamed: Analysis, visualization and presentation.
 
 ## Questions for TAs
-   - How can we quantify the errors of death classification?
-   - Are we on the right track with our mortality index calculation approach, or would you suggest additional considerations for calculating mortality rates by actor and trope?
+   - How can we quantify the error of death classification (since we do not have access to ground-truth)?
+   - Are we on the right track with our mortality index calculation approach?
+   - Tropes clustering and death classfication can be done independent of `character.metadata.tsv`. Furthermore, almost half of the movies do not have any character in `character.metadata.tsv`. What of the following should we do?
+     + Ignore character's metadata to preserve more sample across movies (no Actor-Specific Analysis)
+     + Strive to perform Actor-Specific Analysis regardless of the smaller sample size
+     + Do Movie-Specific Analysis and Actor-Specific Analysis one two different datasets (maybe incoherence but more complete)
