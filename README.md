@@ -30,7 +30,7 @@ For each `.xml` file in `corenlp_plot_summaries.tar`, we parse the file to gener
 - Agent Verbs: Actions characters perform.
 - Patient Verbs: Actions done to characters.
 
-We then attempt to match them with a character in `character.metadata.tsv`. Some characters, like "Two-Faced", are mentioned in the summary but does not appear in the metadata table.
+We then attempt to match them with a character in `character.metadata.tsv`. Some characters, like "Two-Faced", are mentioned in the summary but do not appear in the metadata table.
 
 The preprocessing is documented in `data/preprocessing.md`. An example is given in `data/corenlp_example.md`.
 
