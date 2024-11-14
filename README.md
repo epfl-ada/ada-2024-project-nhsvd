@@ -88,7 +88,7 @@ This complete method is presented in `notebooks/bags_analysis.ipynb`.
 - Feature: Movie's summary tagged with character mentions
 - Approach:
     1. Create document-character pairs as input.
-    2. Use the LLM associates the pair with a binary label: dead or alive.
+    2. Use the LLM to associate the pair with a binary label: dead or alive.
 - Limitation:
     1. LLM API costs.
     2. The result's accuracy is dependent on the prompt.
@@ -117,7 +117,7 @@ Another way to tackle this problem is simply using a LLM to decide the tropes.
 - Feature: Movie's summary tagged with character mentions
 - Approach: 
     1. Create document-character pairs as input.
-    2. Use the LLM associates the pair with a trope label among the well-established tropes.
+    2. Use the LLM to associate the pair with a trope label among the well-established tropes.
 - Limitation: Same limitations as the LLM method in previous section
 
 ### 4. Mortality Index Calculation
