@@ -32,7 +32,7 @@ all the preprocessing scripts take `input_dir` and `output_dir` from the CLI.
    ```
    python build_char_word_bags.py
    ```
-A member(Samuli Näppi) wrote a faster Rust version of the XML parser.
+A member(Samuli Näppi) wrote a faster version of the XML parser in Rust (`src/scripts/xml_to_csv`).
 
 --------
 
@@ -80,7 +80,7 @@ To classify whether a given character has died, we implemented the two methods b
     + One summary contained the following "Two-Face then attacks the party and nearly kills Batman".
     + Batman is considered dead since the model can not differentiate between "nearly kills" and "kills".
 
-This complete method is presented in `bags_analysis.ipynb`.
+This complete method is presented in `src/scripts/bags_analysis.ipynb`.
 
 #### B. LLM:
 
@@ -92,7 +92,7 @@ This complete method is presented in `bags_analysis.ipynb`.
     1. LLM API costs.
     2. The result's accuracy is dependent on the prompt.
 
-This partially completed method is presented in `extract_char_deaths_with_llm.ipynb`.
+This partially completed method is presented in `src/scripts/extract_char_deaths_with_llm.ipynb`.
 
 ### 3. Creating complete tropes clusters
 `tvtropes.clusters.txt` is only an incomplete test file with extremely limited sample size. Therefore, we intend to perform our own tropes clustering using one of the methods below.

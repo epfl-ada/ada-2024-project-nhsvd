@@ -1,0 +1,8 @@
+numpy
+pandas
+spacy
+lxml
+tqdm
+python-dotenv
+pydantic
+openai
