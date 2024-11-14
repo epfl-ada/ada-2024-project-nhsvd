@@ -30,7 +30,7 @@ For each `.xml` in `corenlp_plot_summaries.tar`, we parse the file to extract fr
 - Agent Verbs: Actions characters perform.
 - Patient Verbs: Actions done to characters.
 
-We then attempt to match them with a character in `character.metadata.tsv`. Some characters, like "Two-Faced", are mentioned in the summary but do not appear in the metadata table.
+We then attempt to match them with a character in `character.metadata.tsv`. Some characters, like "Two-Face", are mentioned in the summary but do not appear in the metadata table.
 
 The preprocessing is documented in `data/preprocessing.md`. An example is given in `data/corenlp_example.md`.
 
@@ -53,8 +53,8 @@ This complete method is presented in `notebooks/bags_analysis.ipynb`.
 
 - Feature: Movie's summary tagged with character mentions
 - Approach:
-    1. Create document-character pairs as input.
-    2. Use the LLM to associate the pair with a binary label: dead or alive.
+    1. Create plot summary-character list pairs as input.
+    2. Use the LLM to output for each character a binary label: dead or alive
 - Limitation:
     + LLM API costs.
     + The result's accuracy is dependent on the prompt.
@@ -82,9 +82,11 @@ Another way to tackle this problem is simply using a LLM to decide the tropes.
 
 - Feature: Movie's summary tagged with character mentions
 - Approach: 
-    1. Create document-character pairs as input.
-    2. Ask the LLM to choose a trope that best represents the pair among an array well-established tropes.
-- Limitation: Same limitations as the LLM method in previous section
+    1. Create plot summary-character list pairs as input
+    2. Ask the LLM to choose a trope that best represents each character among the well-established tropes.
+- Limitation:
+    + Same limitations as the LLM method in previous section
+    + Increased complexity in comparison to death classification may reduce reliability of results.
 
 ### 4. Mortality Index Calculation
    - We propose calculating a mortality index as the proportion of characters within each trope, genre, or actor’s filmography that die.
