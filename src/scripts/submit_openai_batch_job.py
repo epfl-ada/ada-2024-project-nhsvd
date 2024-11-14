@@ -1,11 +1,11 @@
 import argparse
 import json
 from pathlib import Path
-from typing import List, Optional
+from typing import List
 
 import pandas as pd
+from tqdm import tqdm
 from dotenv import load_dotenv
-from pydantic import BaseModel, Field, field_validator
 from openai import OpenAI
 
 
@@ -36,9 +36,9 @@ response_format = {
             },
             "required": ["characters"],
             "additionalProperties": False
-        }
-    }, 
-    "strict": True 
+        },
+        "strict": True 
+    }
 }
 
 # the above schema corresponds to the following pydantic model
@@ -50,14 +50,16 @@ response_format = {
 #     characters: List[Character]
 
 
-def get_movie_character_names(movie_id: str, input_dir: Path) -> Optional[List[str]]:
+def get_movie_character_names(movie_id: str, input_dir: Path) -> List[str]:
     character_metadata_file = input_dir / f'character.metadata_{movie_id}.csv'
     character_names = pd.read_csv(character_metadata_file, usecols=['character_name']).character_name.tolist()
     # some movies have character metadata but no character names
     character_names = [name for name in character_names if isinstance(name, str)]
-    if character_names:
-        return character_names
-    return None
+
+    if not character_names:
+        raise ValueError(f"No character names found for movie {movie_id}")
+    
+    return character_names
 
 
 def get_movie_plot_summary(movie_id: str, input_dir: Path) -> str:
@@ -71,21 +73,16 @@ def format_user_prompt(character_names: List, plot_summary: str) -> str:
     return f"Character names: {', '.join(character_names)}\nPlot summary: {str(plot_summary).strip()}"
 
 
-def get_user_prompt(movie_id: str, input_dir: Path) -> Optional[str]:
+def get_user_prompt(movie_id: str, input_dir: Path) -> str:
     character_names = get_movie_character_names(movie_id, input_dir)
-    if not character_names:
-        return None
-
     plot_summary = get_movie_plot_summary(movie_id, input_dir)
 
     return format_user_prompt(character_names, plot_summary)
 
 
-def create_api_request(movie_id: str, input_dir: Path) -> Optional[dict]:
+def create_api_request(movie_id: str, input_dir: Path) -> dict:
     user_prompt = get_user_prompt(movie_id, input_dir)
-    if not user_prompt:
-        return None
-    
+
     return {
         "custom_id": movie_id,
         "method": "POST",
@@ -102,16 +99,19 @@ def create_api_request(movie_id: str, input_dir: Path) -> Optional[dict]:
 
 
 def create_batch(movie_ids: List[str], input_dir: Path, batch_file: Path):
-    count = 0
+    skipped_count = 0
     with open(batch_file, 'w') as f:
-        for movie_id in movie_ids:
-            request = create_api_request(movie_id, input_dir)
-            if not request:
-                count += 1
+        for movie_id in tqdm(movie_ids):
+            try:
+                request = create_api_request(movie_id, input_dir)
+                f.write(json.dumps(request) + '\n')
+            except ValueError:
+                skipped_count += 1
                 continue
-            f.write(json.dumps(request) + '\n')
-    
-    print(f"{count} movies had no character names")
+
+    print(f"{skipped_count} movies were skipped due to missing or invalid character names.")
+    print(f"{len(movie_ids) - skipped_count} movies remaining.")
+
 
 def submit_batch(batch_file: Path):
     client = OpenAI()
@@ -148,17 +148,16 @@ def get_movie_ids(input_dir: Path) -> List[str]:
 
 def main():
     parser = argparse.ArgumentParser(description="Create batch of OpenAI API requests.")
-    parser.add_argument("-i", "--input-dir", type=Path, required=False, default="./data/interim/", 
+    parser.add_argument("-i", "--input-dir", type=Path, default="./data/interim/", 
                         help="Directory containing split plot summaries and character metadata (default: ./data/interim/)")
-    parser.add_argument("--batch-file", type=Path, required=False, default="./batchinput.jsonl", help="Batch input file (default: ./batchinput.jsonl)")
-    parser.add_argument("--movie-ids", required=False, nargs='*', help="List of movie IDs to process")
+    parser.add_argument("--batch-file", type=Path, default="./batchinput.jsonl", help="Path to save batch input file (default: ./batchinput.jsonl)")
+    parser.add_argument("--movie-ids", nargs='*', help="List of movie IDs to process")
+    parser.add_argument("--debug", action="store_true", help="Do not submit the batch job, only create the input file.")
 
     args = parser.parse_args()
     input_dir = args.input_dir
     batch_file = args.batch_file
     movie_ids = args.movie_ids
-
-    movie_ids = ["2583808"]
 
     if movie_ids:
         print(f"Processing {len(movie_ids)} movies:", movie_ids)
@@ -170,18 +169,19 @@ def main():
 
     print(f"Saved batch input to {batch_file}")
 
-    # batch_metadata = submit_batch(batch_file)
+    if args.debug:
+        print("Debug mode enabled. Skipping batch job submission.")
+        return
+
+    batch_metadata = submit_batch(batch_file)
 
     # write batch_metadata.id to a file for easier copy-pasting
+    batch_id_file = Path("./batch_id.txt")
+    batch_id_file.unlink(missing_ok=True)
+    batch_id_file.write_text(batch_metadata.id)
 
-    # batch_id_file = Path("./batch_id.txt")
-    # if batch_id_file.exists():
-    #     batch_id_file.unlink()
-
-    # batch_id_file.write_text(batch_metadata.id)
-
-    # print(f"Submitted batch with ID {batch_metadata.id}")
-    # print(f"Batch ID written to {batch_id_file}")
+    print(f"Submitted batch with ID {batch_metadata.id}")
+    print(f"Batch ID written to {batch_id_file}")
 
 
 if __name__ == "__main__":

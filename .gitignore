@@ -1,6 +1,10 @@
 # ignore data in version control
 data/
 
+# ignore OpenAI batch ID and input files
+batch_id.txt
+batchinput.jsonl
+
 **/.DS_Store
 .DS_Store
 
