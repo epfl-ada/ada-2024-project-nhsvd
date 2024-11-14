@@ -24,7 +24,7 @@ Currently, no additional datasets are required; however, we are considering the 
 We follow the methods layed out by the following paper: Bamman, D., O’Connor, B., & Smith, N. A. (2013). Learning latent personas of film characters. Proceedings of the 51st Annual Meeting of the Association for Computational Linguistics (ACL), 352–361.
 
 ### 1. Data preprocessing to generate character's bag-of-words:
-For each `.xml` file in `corenlp_plot_summaries.tar`, we parse the file to generate the following:
+For each `.xml` in `corenlp_plot_summaries.tar`, we parse the file to extract from Named Entity Recognition (NER) the following:
 
 - Characters mentioned in the summary.
 - Agent Verbs: Actions characters perform.
@@ -83,7 +83,7 @@ Another way to tackle this problem is simply using a LLM to decide the tropes.
 - Feature: Movie's summary tagged with character mentions
 - Approach: 
     1. Create document-character pairs as input.
-    2. Use the LLM to associate the pair with a trope label among the well-established tropes.
+    2. Ask the LLM to choose a trope that best represents the pair among an array well-established tropes.
 - Limitation: Same limitations as the LLM method in previous section
 
 ### 4. Mortality Index Calculation
@@ -111,5 +111,5 @@ Each team member has an assigned role to ensure efficient progress:
    - Are we on the right track with our mortality index calculation approach?
    - Tropes clustering and death classfication can be done independent of `character.metadata.tsv`. Furthermore, almost half of the movies do not have any character in `character.metadata.tsv`. What of the following should we do?
      + Ignore character's metadata to preserve more sample across movies (no Actor-Specific Analysis).
-     + Strive to perform Actor-Specific Analysis regardless of the smaller sample size.
-     + Do Movie-Specific Analysis and Actor-Specific Analysis on two different datasets (maybe incoherence but more complete).
+     + Strive to perform Actor-Specific Analysis regardless of the smaller sample size for Movie-Specific Analysis.
+     + Do Movie-Specific Analysis on every character found by NER, and Actor-Specific Analysis on those appeared in `character.metadata.tsv`.
