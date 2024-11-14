@@ -113,3 +113,4 @@ Each team member has an assigned role to ensure efficient progress:
      + Ignore character's metadata to preserve more sample across movies (no Actor-Specific Analysis).
      + Strive to perform Actor-Specific Analysis regardless of the smaller sample size for Movie-Specific Analysis.
      + Do Movie-Specific Analysis on every character found by NER, and Actor-Specific Analysis on those appeared in `character.metadata.tsv`.
+   - We are considering using IMDb or TMDb to add character and actor details. Do you recommend any specific fields from these sources that could enhance our analysis? Are there any integration challenges we should anticipate?
