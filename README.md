@@ -46,7 +46,7 @@ The goal of this project is to investigate and examine the mortality of movie ch
 2. How does character mortality vary across different movie genres, such as action, horror, and drama?
 3. Do specific actors, known for high on-screen death rates, have a statistically higher chance of dying in films?
 4. Are there additional attributes (such as character age, gender) that correlate with a higher mortality rate?
-## Proposed Additional Datasets
+## Datasets
 At this stage, we are focusing on the datasets provided:
    - `movie.metadata.tsv`: Metadata of movies.
    - `character.metadata.tsv`: Metadata of characters.
