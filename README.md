@@ -21,6 +21,8 @@ Currently, no additional datasets are required; however, we are considering the 
 
 
 ## Methods
+We follow the methods layed out by the following paper: Bamman, D., O’Connor, B., & Smith, N. A. (2013). Learning latent personas of film characters. Proceedings of the 51st Annual Meeting of the Association for Computational Linguistics (ACL), 352–361.
+
 ### 1. Data preprocessing to generate character's bag-of-words:
 For each `.xml` file in `corenlp_plot_summaries.tar`, we parse the file to generate the following:
 
@@ -28,9 +30,8 @@ For each `.xml` file in `corenlp_plot_summaries.tar`, we parse the file to gener
 - Agent Verbs: Actions characters perform.
 - Patient Verbs: Actions done to characters.
 
-We then attempt to match them with a character in `character.metadata.tsv`. Some characters like "Two-Faced" appear in the summary but not in the metadata table.
-
-The preprocessing is documented at the start of this `README.md`.
+We then attempt to match them with a character in `character.metadata.tsv`. Some characters like "Two-Faced" is mentioned in the summary but does not appear in the metadata table.
+The preprocessing is documented in `data/preprocessing.md`. An example is given in `data/corenlp_example.md`.
 
 ### 2. Determining which characters died
 To classify whether a given character has died, we implemented the two methods below.
@@ -64,7 +65,7 @@ This partially completed method is presented in `notebooks/extract_char_deaths_w
 
 #### A. Dirichlet Persona Model (DPM):
 
-This is the original model used to generate `tvtropes.clusters.txt` proposed by Bamman, O’Connor, & Smith in their paper: "Learning latent personas of film characters". It is a latent variable model based on Latent Dirichlet Allocation (LDA)
+This is the original model used to generate `tvtropes.clusters.txt` proposed in the paper mentioned above. It is a latent variable model based on Latent Dirichlet Allocation (LDA)
 
 - Feature: The character's bag-of-words
 - Approach: 
