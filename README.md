@@ -31,6 +31,7 @@ For each `.xml` file in `corenlp_plot_summaries.tar`, we parse the file to gener
 - Patient Verbs: Actions done to characters.
 
 We then attempt to match them with a character in `character.metadata.tsv`. Some characters like "Two-Faced" is mentioned in the summary but does not appear in the metadata table.
+
 The preprocessing is documented in `data/preprocessing.md`. An example is given in `data/corenlp_example.md`.
 
 ### 2. Determining which characters died
