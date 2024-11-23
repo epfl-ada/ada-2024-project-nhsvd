@@ -39,8 +39,9 @@ def get_batch_ids(args) -> List[str]:
     return list(batch_ids)
 
 
-def process_response(response_jsonl: str) -> Tuple[List[dict], List[Tuple[str, str]]]:
+def process_response(response_jsonl: str) -> Tuple[List[dict], List[str], List[Tuple[str, str]]]:
     data_rows = []
+    no_characters = []
     refusals = []
 
     for line in response_jsonl.splitlines():
@@ -56,6 +57,11 @@ def process_response(response_jsonl: str) -> Tuple[List[dict], List[Tuple[str, s
 
             content = json.loads(message['content'])
 
+            if not content.get('characters'):
+                no_characters.append(movie_id)
+                logging.debug(f"No characters found in response for movie ID: {movie_id}")
+                continue
+
             for character in content.get('characters', []):
                 data_rows.append({
                     "movie_id": movie_id,
@@ -66,10 +72,10 @@ def process_response(response_jsonl: str) -> Tuple[List[dict], List[Tuple[str, s
             logging.error(f"Error processing line: {e}")
             continue
 
-    return data_rows, refusals
+    return data_rows, no_characters, refusals
 
 
-def process_batch(batch_id: str) -> Tuple[List[dict], List[Tuple[str, str]]]:
+def process_batch(batch_id: str) -> Tuple[List[dict], List[str], List[Tuple[str, str]]]:
     try:
         status = client.batches.retrieve(batch_id)
         if status.status == "completed":
@@ -79,10 +85,10 @@ def process_batch(batch_id: str) -> Tuple[List[dict], List[Tuple[str, str]]]:
             return process_response(response_jsonl)
         else:
             logging.warning(f"Batch job '{batch_id}' is in status: '{status.status}'. Skipping.")
-            return [], []
+            return [], [], []
     except Exception as e:
         logging.error(f"Failed to process batch ID '{batch_id}': {e}")
-        return [], []
+        return [], [], []
 
 
 def main():
@@ -92,11 +98,14 @@ def main():
                         help="One or more batch IDs. You can specify multiple IDs separated by space.")
     parser.add_argument("-o", "--output", type=Path, default="./data/processed/character_deaths.csv", 
                         help="Output CSV file path (default: ./data/processed/character_deaths.csv)")
-    parser.add_argument("-r", "--refused", type=Path, default="./refused_ids.txt", 
+    parser.add_argument("--no-characters", type=Path, default="./no_characters.txt", 
+                        help="Path to save movie IDs with no characters (default: ./no_characters.txt)")
+    parser.add_argument("--refused", type=Path, default="./refused_ids.txt", 
                         help="Path to save refused IDs (default: ./refused_ids.txt)")
     parser.add_argument("-y", action='store_true', help="Overwrite output files without prompting.")
     args = parser.parse_args()
     output_file = args.output
+    no_characters_file = args.no_characters
     refusal_file = args.refused
 
     if not args.id and not args.file:
@@ -112,37 +121,49 @@ def main():
     output_file.parent.mkdir(parents=True, exist_ok=True)
     refusal_file.parent.mkdir(parents=True, exist_ok=True)
 
-    if args.output.exists() and not args.y:
-        logging.warning(f"Output file '{args.output}' already exists.")
+    if output_file.exists() and not args.y:
+        logging.warning(f"Output file '{output_file}' already exists.")
         response = input("Do you want to overwrite the output file? (y/n) ").lower().strip()
         if response != "y":
             logging.info("Operation cancelled by user.")
             return
 
     all_data_rows = []
+    all_no_characters = []
     all_refusals = []
 
     for batch_id in batch_ids:
-        data_rows, refusals = process_batch(batch_id)
+        data_rows, no_characters, refusals = process_batch(batch_id)
         all_data_rows.extend(data_rows)
+        all_no_characters.extend(no_characters)
         all_refusals.extend(refusals)
 
     if all_data_rows:
-        with args.output.open('w', newline='', encoding='utf-8') as csvfile:
+        with output_file.open('w', newline='', encoding='utf-8') as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=["movie_id", "character_name", "dies"])
             writer.writeheader()
             writer.writerows(all_data_rows)
-        logging.info(f"Processed character data saved to '{args.output}'")
+        logging.info(f"Processed character data saved to '{output_file}'")
     else:
         logging.info("No data to write. Skipping writing to output file.")
 
+    if all_no_characters:
+        with no_characters_file.open('w', newline='', encoding='utf-8') as csvfile:
+            writer = csv.DictWriter(csvfile, fieldnames=["movie_id"])
+            writer.writeheader()
+            for movie_id in all_no_characters:
+                writer.writerow({"movie_id": movie_id})
+        logging.info(f"Saved {len(all_no_characters)} movie IDs with no characters to '{no_characters_file}'")
+    else:
+        logging.info("No movie IDs with no characters.")
+
     if all_refusals:
-        with args.refused.open('w', newline='', encoding='utf-8') as csvfile:
+        with refusal_file.open('w', newline='', encoding='utf-8') as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=["movie_id", "refusal"])
             writer.writeheader()
             for movie_id, refusal_reason in all_refusals:
                 writer.writerow({"movie_id": movie_id, "refusal": refusal_reason})
-        logging.info(f"Saved {len(all_refusals)} refusals to '{args.refused}'")
+        logging.info(f"Saved {len(all_refusals)} refusals to '{refusal_file}'")
     else:
         logging.info("No requests were refused.")
 
