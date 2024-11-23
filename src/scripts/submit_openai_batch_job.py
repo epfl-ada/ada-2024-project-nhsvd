@@ -191,6 +191,8 @@ def main():
                         help="Path to save list of movie IDs with missing metadata or character names (default: ./missing_metadata_movie_ids.txt)")
     parser.add_argument("--movie-ids", nargs='*', help="List of specific movie IDs to process")
     parser.add_argument("--debug", action="store_true", help="Do not submit the batch job, only create the input file.")
+    parser.add_argument("--test", action="store_true", help="Create and submit a test batch job.")
+    parser.add_argument("-n", type=int, default=100, help="Number of test movies to process (default: 100)")
 
     args = parser.parse_args()
     input_dir = args.input_dir
@@ -204,6 +206,9 @@ def main():
     else:
         movie_ids = get_movie_ids(input_dir)
         logging.info(f"Processing {len(movie_ids)} movies found in the input directory: {input_dir}")
+    
+    if args.test:
+        movie_ids = movie_ids[:args.n]
 
     create_batch_requests(movie_ids, input_dir, batch_file, missing_ids_file)
 
