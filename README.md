@@ -86,7 +86,24 @@ Another way to tackle this problem is simply using a LLM to decide the tropes.
     2. Ask the LLM to choose a trope that best represents each character among the well-established tropes.
 - Limitation:
     + Same limitations as the LLM method in previous section
-    + Increased complexity in comparison to death classification may reduce reliability of results.
+    + Increased complexity in comparison to death classification may reduce reliability of results
+    
+#### C. Embedding-Based Clustering:
+
+- Feature:
+   - Character embeddings are generated using the `SentenceTransformer` model (`all-mpnet-base-v2`), which converts the "bags of words" for each character into dense, high-dimensional numerical vectors. These embeddings capture the semantic relationships among the actions, attributes, and descriptions associated with each character.
+
+- Approach:
+   1. Generate Embeddings: Use the SentenceTransformer model to encode character bags of words into dense vectors.
+   2. Initial Clustering: Apply KMeans clustering to group characters into clusters based on their embeddings.
+   3. Fine-Tune Embeddings: Use a custom `ClusterLoss` function to fine-tune the embeddings by minimizing the distances between characters sharing the same trope and maximizing separation for characters with different tropes.
+   4. Evaluation: Compare the predicted clusters with ground truth tropes to assess clustering accuracy and interpret results.
+
+- Limitation:
+   - Relies heavily on the quality of pre-trained embeddings from the SentenceTransformer model, which may not fully capture nuances specific to movie character descriptions.
+   - KMeans clustering assumes a fixed number of clusters, which must match the number of ground truth tropes and may not generalize well for datasets with more diverse or overlapping tropes.
+   - Fine-tuning is computationally intensive and requires careful parameter tuning (e.g., learning rate, number of epochs).
+   - Manual alignment of clusters with tropes is still required for evaluation.
 
 ### 4. Mortality Index Calculation
    - We propose calculating a mortality index as the proportion of characters within each trope, genre, or actor’s filmography that die.
