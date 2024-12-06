@@ -1,0 +1,25 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "character_deaths"
+version = "0.1.0"
+description = "Process character deaths in movie plots using OpenAI"
+requires-python = ">=3.12"
+dependencies = [
+    "openai",
+    "pandas",
+    "sqlmodel",
+    "tqdm",
+    "python-dotenv"
+]
+
+[project.scripts]
+character-deaths-create-batches = "character_deaths.cli.create_batches:main"
+character-deaths-submit-batch = "character_deaths.cli.submit_batch:main"
+character-deaths-retrieve-batch = "character_deaths.cli.retrieve_batch:main"
+character-deaths-process-chat = "character_deaths.cli.process_chat:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/character_deaths"]
