@@ -118,7 +118,6 @@ class BatchCreator:
             
             self.db.add_movie(
                 movie_id=movie_id,
-                plot_summary=plot_summary,
                 metadata_status=metadata_status
             )
             

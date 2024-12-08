@@ -26,9 +26,9 @@ class DatabaseHandler:
         finally:
             session.close()
     
-    def add_movie(self, movie_id: str, plot_summary: str, metadata_status: MetadataStatus) -> None:
+    def add_movie(self, movie_id: str, metadata_status: MetadataStatus) -> None:
         with self.get_session() as session:
-            movie = Movie(id=movie_id, plot_summary=plot_summary, metadata_status=metadata_status)
+            movie = Movie(id=movie_id, metadata_status=metadata_status)
             session.add(movie)
     
     def add_character_deaths(self, movie_id: str, characters: List[Character]) -> None:

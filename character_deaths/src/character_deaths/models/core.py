@@ -29,7 +29,6 @@ class Characters(BaseModel):
 
 class MovieBase(SQLModel):
     id: str = Field(primary_key=True)
-    plot_summary: str
     metadata_status: MetadataStatus
     processed_status: ProcessingStatus = Field(default=ProcessingStatus.PENDING)
     processing_method: Optional[ProcessingMethod] = None

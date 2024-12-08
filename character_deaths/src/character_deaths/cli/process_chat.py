@@ -43,16 +43,14 @@ class ChatProcessor:
         """Process a single movie, return True if successful"""
         try:
             character_names = self.get_character_names(movie.id)
-            # plot_summary = self.get_plot_summary(movie.id)
-            # currently summaries are stored in the database
-            # we could use the ones from the interim directory to save space
+            plot_summary = self.get_plot_summary(movie.id)
             
             completion = self.client.beta.chat.completions.parse(
                 model="gpt-4o-mini",
                 messages=[
                     {"role": "system", "content": SYSTEM_PROMPT},
                     {"role": "user", "content": construct_user_prompt(
-                        plot_summary=movie.plot_summary,
+                        plot_summary=plot_summary,
                         character_names=character_names
                     )}
                 ],
