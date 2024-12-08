@@ -15,8 +15,8 @@ logging.basicConfig(
     format='%(asctime)s %(levelname)s: %(message)s'
 )
 
-def submit_batch(batch_file: Path, batch_num: int, db: DatabaseHandler, output_dir: Path, force: bool = False) -> None:
-    batch_ids = get_batch_ids(output_dir)
+def submit_batch(batch_file: Path, batch_num: int, db: DatabaseHandler, batch_dir: Path, force: bool = False) -> None:
+    batch_ids = get_batch_ids(batch_dir)
     
     while len(batch_ids) < batch_num:
         batch_ids.append(None)
@@ -41,7 +41,7 @@ def submit_batch(batch_file: Path, batch_num: int, db: DatabaseHandler, output_d
         )
 
         batch_ids[batch_num - 1] = batch.id
-        save_batch_ids(output_dir, batch_ids)
+        save_batch_ids(batch_dir, batch_ids)
         
         db.update_batch_movies_status(batch_num, batch.id, ProcessingStatus.PROCESSING)
         
@@ -56,7 +56,6 @@ def main():
     parser.add_argument("--db-path", type=Path, required=True)
     parser.add_argument("--batch-num", type=int, required=True, help="Batch number to submit (indexed from 1)")
     parser.add_argument("--batch-dir", type=Path, required=True)
-    parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("-f", "--force", action="store_true", help="Force submission even if the batch is already submitted")
     args = parser.parse_args()
     
@@ -65,7 +64,7 @@ def main():
         raise FileNotFoundError(f"Batch file not found: {batch_file}")
     
     db = DatabaseHandler(args.db_path)
-    submit_batch(batch_file, args.batch_num, db, args.output_dir, args.force)
+    submit_batch(batch_file, args.batch_num, db, args.batch_dir, args.force)
 
 if __name__ == "__main__":
     main()

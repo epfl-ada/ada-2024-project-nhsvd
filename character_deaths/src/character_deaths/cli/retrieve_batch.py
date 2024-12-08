@@ -51,10 +51,10 @@ def main():
     parser = argparse.ArgumentParser(description="Retrieve batch results")
     parser.add_argument("--db-path", type=Path, required=True)
     parser.add_argument("--batch-num", type=int, required=True, help="Batch number to retrieve (indexed from 1)")
-    parser.add_argument("--output-dir", type=Path, required=True)
+    parser.add_argument("--batch-dir", type=Path, required=True)
     args = parser.parse_args()
     
-    batch_ids = get_batch_ids(args.output_dir)
+    batch_ids = get_batch_ids(args.batch_dir)
     if args.batch_num > len(batch_ids) or not batch_ids[args.batch_num - 1]:
         logging.error(f"No batch ID found for batch {args.batch_num}")
         return
