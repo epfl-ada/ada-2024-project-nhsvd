@@ -56,13 +56,13 @@ class BatchCreator:
         self,
         db: DatabaseHandler,
         input_dir: Path,
-        output_dir: Path,
+        batch_dir: Path,
         num_batches: int,
         batch_token_target: int
     ):
         self.db = db
         self.input_dir = input_dir
-        self.output_dir = output_dir
+        self.batch_dir = batch_dir
         self.token_counter = TokenCounter()
         self.num_batches = num_batches
         self.batch_token_target = batch_token_target
@@ -162,11 +162,11 @@ class BatchCreator:
             self.create_batch_file(current_batch, batch_movies, current_tokens)
             batch_ids.append(None)
         
-        save_batch_ids(self.output_dir, batch_ids)
+        save_batch_ids(self.batch_dir, batch_ids)
     
     def create_batch_file(self, batch_num: int, movies: List[Tuple[str, int]], token_count: int) -> None:
         """Create batch file and update database records"""
-        batch_file = self.output_dir / f"batch_{batch_num}.jsonl"
+        batch_file = self.batch_dir / f"batch_{batch_num}.jsonl"
         
         with batch_file.open('w') as f:
             for movie_id, _ in movies:
@@ -204,7 +204,7 @@ def main():
     parser = argparse.ArgumentParser(description="Initialize database and create batch files")
     parser.add_argument("--db-path", type=Path, required=True)
     parser.add_argument("--input-dir", type=Path, required=True)
-    parser.add_argument("--output-dir", type=Path, required=True)
+    parser.add_argument("--batch-dir", type=Path, required=True)
     parser.add_argument("--num-batches", type=int, default=4)
     parser.add_argument("--batch-token-target", type=int, default=1_900_000)
     args = parser.parse_args()
@@ -214,10 +214,10 @@ def main():
         logging.warning(f"Database file already exists at {args.db_path}. Exiting.")
         return
 
-    args.output_dir.mkdir(parents=True, exist_ok=True)
+    args.batch_dir.mkdir(parents=True, exist_ok=True)
 
     db = DatabaseHandler(args.db_path) 
-    creator = BatchCreator(db, args.input_dir, args.output_dir, args.num_batches, args.batch_token_target)
+    creator = BatchCreator(db, args.input_dir, args.batch_dir, args.num_batches, args.batch_token_target)
     movies = creator.process_all_movies()
     creator.create_batches(movies)
 

@@ -25,7 +25,7 @@ Arguments:
 
 - `--db-path`: Path where the database will be saved.
 - `--input-dir`: Path to the directory containing the *split* plot summaries and character metadata (one file per movie, created by `src/preprocessing/split_plot_summaries.py` and `src/preprocessing/split_char_metadata.py`).
-- `--output-dir`: Path to the directory to save the batch files.
+- `--batch-dir`: Path to the directory to save the batch files.
 - `--num-batches`: Number of batches to create.
 - `--batch-token-target`: Target number of tokens per batch.
 
