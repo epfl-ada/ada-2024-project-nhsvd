@@ -1,8 +1,8 @@
 from .common import (
     SYSTEM_PROMPT, 
-    construct_user_prompt, 
-    get_summary, 
-    get_char_names,
+    construct_user_prompt,
+    get_plot_summary,
+    get_character_names,
     get_batch_ids,
     save_batch_ids
 )

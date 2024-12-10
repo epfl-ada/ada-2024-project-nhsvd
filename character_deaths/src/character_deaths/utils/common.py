@@ -1,26 +1,34 @@
 from typing import Optional, List
 from pathlib import Path
 import json
+import logging
 
 import pandas as pd
-
 
 SYSTEM_PROMPT = (
     "Given a list of character names and a plot summary, extract the information about character deaths."
 )
 
-def get_summary(input_dir: Path, movie_id: str) -> str:
+def get_plot_summary(input_dir: Path, movie_id: str) -> str:
     """Get plot summary for a movie"""
-    plot_file = input_dir / f'plot_summaries_{movie_id}.txt'
-    return plot_file.read_text().strip()
+    try:
+        plot_file = input_dir / f'plot_summaries_{movie_id}.txt'
+        return plot_file.read_text().strip()
+    except Exception as e:
+        logging.error(f"Error reading plot summary for {movie_id}: {e}")
+        return None
 
-def get_char_names(input_dir: Path, movie_id: str) -> List[str]:
+def get_character_names(input_dir: Path, movie_id: str) -> List[str]:
     """Get character names if available"""
-    char_file = input_dir / f'character.metadata_{movie_id}.csv'
-    if not char_file.exists():
-        return []
-    df = pd.read_csv(char_file, usecols=['character_name'])
-    return df['character_name'].dropna().astype(str).tolist()
+    try:
+        char_file = input_dir / f'character.metadata_{movie_id}.csv'
+        if not char_file.exists():
+            return []
+        df = pd.read_csv(char_file, usecols=['character_name'])
+        return df['character_name'].dropna().astype(str).tolist()
+    except Exception as e:
+        logging.error(f"Error reading characters for {movie_id}: {e}")
+        return None
 
 def construct_user_prompt(plot_summary: str, character_names: Optional[List[str]]) -> str:
     if character_names:

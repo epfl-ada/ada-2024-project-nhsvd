@@ -17,6 +17,7 @@ dependencies = [
 ]
 
 [project.scripts]
+character-deaths-init-db = "character_deaths.cli.init_db:main"
 character-deaths-create-batches = "character_deaths.cli.create_batches:main"
 character-deaths-submit-batch = "character_deaths.cli.submit_batch:main"
 character-deaths-retrieve-batch = "character_deaths.cli.retrieve_batch:main"

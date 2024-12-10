@@ -2,19 +2,16 @@ import argparse
 import json
 import logging
 from pathlib import Path
-from typing import List, Tuple, Optional
+from typing import List
 
-import pandas as pd
-from tqdm import tqdm
-
-from character_deaths.models import ProcessingMethod, ProcessingStatus, MetadataStatus
+from character_deaths.models import ProcessingMethod
 from character_deaths.database import DatabaseHandler
 from character_deaths.utils import (
-    TokenCounter, 
     SYSTEM_PROMPT, 
     construct_user_prompt, 
-    get_summary, 
-    get_char_names,
+    get_plot_summary,
+    get_character_names,
+    get_batch_ids,
     save_batch_ids
 )
 
@@ -63,115 +60,62 @@ class BatchCreator:
         self.db = db
         self.input_dir = input_dir
         self.batch_dir = batch_dir
-        self.token_counter = TokenCounter()
         self.num_batches = num_batches
         self.batch_token_target = batch_token_target
+        self.batch_count = self.db.get_batch_count()
 
-    def check_character_metadata(self, movie_id: str) -> MetadataStatus:
-        char_file = self.input_dir / f'character.metadata_{movie_id}.csv'
-        
-        if not char_file.exists():
-            return MetadataStatus.MISSING_METADATA
+    def create_batches(self) -> None:
+        with self.db.get_session() as session:
+            movies = self.db.get_pending_chat_movies()
+            if not movies:
+                logging.info("No pending movies available for batching.")
+                return
             
-        try:
-            df = pd.read_csv(char_file, usecols=['character_name'])
-            valid_names = df['character_name'].dropna().astype(str).tolist()
-            
-            if not valid_names:
-                return MetadataStatus.EMPTY_CHARACTERS
-                
-            return MetadataStatus.COMPLETE
-            
-        except Exception as e:
-            logging.error(f"Error reading character metadata for {movie_id}: {e}")
-            return MetadataStatus.MISSING_METADATA
-    
-    def get_plot_summary(self, movie_id: str) -> Optional[str]:
-        try:
-            return get_summary(self.input_dir, movie_id)
-        except Exception as e:
-            logging.error(f"Error reading plot summary for {movie_id}: {e}")
-            return None
-    
-    def get_character_names(self, movie_id: str) -> Optional[List[str]]:
-        try:
-            return get_char_names(self.input_dir, movie_id)
-        except Exception as e:
-            logging.error(f"Error reading characters for {movie_id}: {e}")
-            return None
-    
-    def process_all_movies(self) -> List[Tuple[str, int]]:
-        """Process all movies and return list of (movie_id, token_count)"""
-        all_movies = []
-        
-        plot_files = list(self.input_dir.glob('plot_summaries_*.txt'))
-        
-        for plot_file in tqdm(plot_files, desc="Processing movies"):
-            movie_id = plot_file.stem.split('_')[2]
-            plot_summary = self.get_plot_summary(movie_id)
-            
-            if not plot_summary:
-                continue
-                
-            metadata_status = self.check_character_metadata(movie_id)
-            character_names = self.get_character_names(movie_id) if metadata_status == MetadataStatus.COMPLETE else None
-            
-            self.db.add_movie(
-                movie_id=movie_id,
-                metadata_status=metadata_status
-            )
-            
-            token_count = self.token_counter.estimate_request_tokens(
-                plot_summary=plot_summary,
-                character_names=character_names
-            )
-            all_movies.append((movie_id, token_count))
-        
-        return all_movies
-    
-    def create_batches(self, movies: List[Tuple[str, int]]) -> None:
-        """Create batch files and update database"""
-        # Sort by token count to process smallest in batches
-        movies.sort(key=lambda x: x[1])
-        
-        current_batch = 1
-        current_tokens = 0
-        batch_movies = []
-        batch_ids = []
+            logging.info(f"Found {len(movies)} pending movies not assigned to a batch")
 
-        for movie_id, token_count in movies:
-            if current_batch > self.num_batches:
-                for remaining_id, _ in movies[len(batch_movies):]:
-                    self.db.update_movie_method(
-                        movie_id=remaining_id,
-                        method=ProcessingMethod.CHAT
-                    )
-                break
-                
-            if current_tokens + token_count > self.batch_token_target:
+            for movie in movies:
+                session.add(movie)
+            # Sort by token count to process the shortest summaries first (least tokens per request)
+            movies.sort(key=lambda x: x.token_count)
+            
+            current_batch = 1
+            current_tokens = 0
+            batch_movies = []
+            batch_ids = get_batch_ids(self.batch_dir)
+
+            for movie in movies:
+                if current_batch > self.num_batches:
+                    break
+                    
+                if current_tokens + movie.token_count > self.batch_token_target:
+                    self.create_batch_file(current_batch, batch_movies, current_tokens)
+                    current_batch += 1
+                    batch_movies = [movie.id]
+                    current_tokens = movie.token_count
+                    batch_ids.append(None)
+                else:
+                    batch_movies.append(movie.id)
+                    current_tokens += movie.token_count
+            
+            if batch_movies and current_batch <= self.num_batches:
                 self.create_batch_file(current_batch, batch_movies, current_tokens)
-                current_batch += 1
-                batch_movies = [(movie_id, token_count)]
-                current_tokens = token_count
                 batch_ids.append(None)
-            else:
-                batch_movies.append((movie_id, token_count))
-                current_tokens += token_count
-        
-        if batch_movies and current_batch <= self.num_batches:
-            self.create_batch_file(current_batch, batch_movies, current_tokens)
-            batch_ids.append(None)
-        
-        save_batch_ids(self.batch_dir, batch_ids)
+            
+            save_batch_ids(self.batch_dir, batch_ids)
     
-    def create_batch_file(self, batch_num: int, movies: List[Tuple[str, int]], token_count: int) -> None:
-        """Create batch file and update database records"""
-        batch_file = self.batch_dir / f"batch_{batch_num}.jsonl"
+    def create_batch_file(self, batch_num: int, movie_ids: List[str], token_count: int) -> None:
+        batch_index = self.batch_count + batch_num
+
+        batch_file = self.batch_dir / f"batch_{batch_index}.jsonl"
         
         with batch_file.open('w') as f:
-            for movie_id, _ in movies:
-                plot_summary = self.get_plot_summary(movie_id)
-                character_names = self.get_character_names(movie_id)
+            for movie_id in movie_ids:
+                plot_summary = get_plot_summary(self.input_dir, movie_id)
+                character_names = get_character_names(self.input_dir, movie_id)
+                user_prompt = construct_user_prompt(
+                    plot_summary=plot_summary,
+                    character_names=character_names
+                )
                 
                 request = {
                     "custom_id": movie_id,
@@ -181,45 +125,42 @@ class BatchCreator:
                         "model": "gpt-4o-mini",
                         "messages": [
                             {"role": "system", "content": SYSTEM_PROMPT},
-                            {"role": "user", "content": construct_user_prompt(plot_summary=plot_summary, character_names=character_names)}
+                            {"role": "user", "content": user_prompt}
                         ],
                         "response_format": RESPONSE_FORMAT
                     }
                 }
                 f.write(json.dumps(request) + '\n')
                 
-                self.db.update_movie_method(
+                self.db.update_movie(
                     movie_id=movie_id,
                     method=ProcessingMethod.BATCH,
-                    batch_index=batch_num
-                )
-                self.db.update_movie_status(
-                    movie_id=movie_id,
-                    status=ProcessingStatus.PENDING,
+                    batch_index=batch_index,
+                    token_count=token_count
                 )
         
-        logging.info(f"Created batch {batch_num} with {len(movies)} movies and estimated {token_count} tokens")
+        logging.info(f"Created batch {batch_index} with {len(movie_ids)} movies and estimated {token_count} tokens")
 
 def main():
-    parser = argparse.ArgumentParser(description="Initialize database and create batch files")
-    parser.add_argument("--db-path", type=Path, required=True)
-    parser.add_argument("--input-dir", type=Path, required=True)
-    parser.add_argument("--batch-dir", type=Path, required=True)
-    parser.add_argument("--num-batches", type=int, default=4)
-    parser.add_argument("--batch-token-target", type=int, default=1_900_000)
+    parser = argparse.ArgumentParser(description="Create new batches from pending movies")
+    parser.add_argument("--db-path", type=Path, required=True, help="Path to the database")
+    parser.add_argument("--input-dir", type=Path, default=Path("./data/interim"), 
+                        help="Path to the input directory (default: ./data/interim)")
+    parser.add_argument("--batch-dir", type=Path, required=True,
+                        help="Path to the batch directory")
+    parser.add_argument("--num-batches", type=int, default=4, 
+                        help="Number of batches to create (default: 4)")
+    parser.add_argument("--batch-token-target", type=int, default=1_900_000, 
+                        help="Target token count for each batch (default: 1_900_000)")
     args = parser.parse_args()
-
-    args.db_path.parent.mkdir(parents=True, exist_ok=True)
-    if args.db_path.exists():
-        logging.warning(f"Database file already exists at {args.db_path}. Exiting.")
-        return
 
     args.batch_dir.mkdir(parents=True, exist_ok=True)
 
-    db = DatabaseHandler(args.db_path) 
+    db = DatabaseHandler(args.db_path)
     creator = BatchCreator(db, args.input_dir, args.batch_dir, args.num_batches, args.batch_token_target)
-    movies = creator.process_all_movies()
-    creator.create_batches(movies)
+    creator.create_batches()
+    logging.info("Batch creation complete.")
+
 
 if __name__ == "__main__":
     main()
