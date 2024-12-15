@@ -12,15 +12,22 @@ from character_deaths.utils.common import get_batch_ids, save_batch_ids
 
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s %(levelname)s: %(message)s'
+    format='%(asctime)s %(levelname)s: %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S'
 )
 
-def submit_batch(batch_file: Path, batch_num: int, db: DatabaseHandler, batch_dir: Path, force: bool = False) -> None:
+def submit_batch(
+    batch_file: Path, 
+    batch_num: int, 
+    db: DatabaseHandler, 
+    batch_dir: Path, 
+    force: bool = False
+) -> None:
     batch_ids = get_batch_ids(batch_dir)
     
     while len(batch_ids) < batch_num:
         batch_ids.append(None)
-        
+
     if batch_ids[batch_num - 1] is not None and not force:
         logging.info(f"Batch {batch_num} already submitted")
         return
@@ -53,10 +60,14 @@ def submit_batch(batch_file: Path, batch_num: int, db: DatabaseHandler, batch_di
 
 def main():
     parser = argparse.ArgumentParser(description="Submit a batch for processing")
-    parser.add_argument("--db-path", type=Path, required=True)
-    parser.add_argument("--batch-num", type=int, required=True, help="Batch number to submit (indexed from 1)")
-    parser.add_argument("--batch-dir", type=Path, required=True)
-    parser.add_argument("-f", "--force", action="store_true", help="Force submission even if the batch is already submitted")
+    parser.add_argument("--db-path", type=Path, required=True, 
+                        help="Path to the database")
+    parser.add_argument("--batch-num", type=int, required=True, 
+                        help="Batch number to submit (indexed from 1)")
+    parser.add_argument("--batch-dir", type=Path, required=True, 
+                        help="Path to the batch directory")
+    parser.add_argument("-f", "--force", action="store_true", 
+                        help="Force submission even if the batch is already submitted")
     args = parser.parse_args()
     
     batch_file = args.batch_dir / f"batch_{args.batch_num}.jsonl"

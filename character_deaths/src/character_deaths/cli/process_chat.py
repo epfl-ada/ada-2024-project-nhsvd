@@ -1,6 +1,5 @@
 import argparse
 import logging
-from typing import Optional, List
 from pathlib import Path
 
 from openai import OpenAI, RateLimitError
@@ -11,12 +10,16 @@ load_dotenv()
 from character_deaths.models import Movie, ProcessingStatus, Characters
 from character_deaths.database import DatabaseHandler
 from character_deaths.utils import (
-    SYSTEM_PROMPT, construct_user_prompt, get_summary, get_char_names
+    SYSTEM_PROMPT, 
+    construct_user_prompt,
+    get_plot_summary, 
+    get_character_names
 )
 
 logging.basicConfig(
     level=logging.WARNING,
-    format='%(asctime)s %(levelname)s: %(message)s'
+    format='%(asctime)s %(levelname)s: %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S'
 )
 
 class ChatProcessor:
@@ -25,25 +28,10 @@ class ChatProcessor:
         self.db = db
         self.input_dir = input_dir
 
-    def get_plot_summary(self, movie_id: str) -> Optional[str]:
-        try:
-            return get_summary(self.input_dir, movie_id)
-        except Exception as e:
-            logging.error(f"Error reading plot summary for {movie_id}: {e}")
-            return None
-    
-    def get_character_names(self, movie_id: str) -> Optional[List[str]]:
-        try:
-            return get_char_names(self.input_dir, movie_id)
-        except Exception as e:
-            logging.error(f"Error reading characters for {movie_id}: {e}")
-            return None
-
     def process_movie(self, movie: Movie) -> bool:
-        """Process a single movie, return True if successful"""
         try:
-            character_names = self.get_character_names(movie.id)
-            plot_summary = self.get_plot_summary(movie.id)
+            character_names = get_character_names(self.input_dir, movie.id)
+            plot_summary = get_plot_summary(self.input_dir, movie.id)
             
             completion = self.client.beta.chat.completions.parse(
                 model="gpt-4o-mini",
@@ -64,16 +52,24 @@ class ChatProcessor:
         except RateLimitError:
             logging.error("Rate limit reached - stopping processing")
             return False
+        except KeyboardInterrupt:
+            logging.error("Keyboard interrupt - stopping processing")
+            self.db.update_movie(
+                movie_id=movie.id,
+                status=ProcessingStatus.PENDING
+            )
+            return False
         except Exception as e:
             logging.error(f"Error processing movie {movie.id}: {e}")
-            self.db.update_movie_status(movie.id, ProcessingStatus.FAILED)
+            self.db.update_movie(
+                movie_id=movie.id,
+                status=ProcessingStatus.FAILED
+            )
             return True
 
     def process_pending_movies(self) -> None:
-        """Process all pending movies"""
-
         with self.db.get_session() as session:
-            pending_movies = self.db.get_pending_chat_movies(limit=50_000)
+            pending_movies = self.db.get_pending_chat_movies()
         
             if not pending_movies:
                 logging.info("No pending movies to process")
@@ -85,9 +81,11 @@ class ChatProcessor:
                     break
 
 def main():
-    parser = argparse.ArgumentParser(description="Process movies using chat (streaming)API")
-    parser.add_argument("--db-path", type=Path, required=True)
-    parser.add_argument("--input-dir", type=Path, required=True)
+    parser = argparse.ArgumentParser(description="Process movies using chat (real-time) API")
+    parser.add_argument("--db-path", type=Path, required=True, 
+                        help="Path to the database")
+    parser.add_argument("--input-dir", type=Path, default=Path("./data/interim"), 
+                        help="Path to the input directory (default: ./data/interim)")
     args = parser.parse_args()
     
     db = DatabaseHandler(args.db_path)

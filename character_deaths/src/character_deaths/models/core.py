@@ -34,6 +34,7 @@ class MovieBase(SQLModel):
     processing_method: Optional[ProcessingMethod] = None
     batch_id: Optional[str] = None
     batch_index: Optional[int] = None
+    token_count: int = Field(default=0)
     last_updated: datetime = Field(default_factory=datetime.utcnow)
 
 class Movie(MovieBase, table=True):

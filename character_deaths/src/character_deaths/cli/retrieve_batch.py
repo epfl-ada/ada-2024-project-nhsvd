@@ -13,12 +13,11 @@ from character_deaths.utils.common import get_batch_ids
 
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s %(levelname)s: %(message)s'
+    format='%(asctime)s %(levelname)s: %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S'
 )
 
-def retrieve_batch_results(batch_id: str, db: DatabaseHandler, 
-                         client: OpenAI) -> None:
-    """Retrieve and process results from a completed batch"""
+def retrieve_batch_results(batch_id: str, db: DatabaseHandler, client: OpenAI) -> None:
     try:
         status = client.batches.retrieve(batch_id)
         if status.status != "completed":
@@ -32,15 +31,23 @@ def retrieve_batch_results(batch_id: str, db: DatabaseHandler,
             try:
                 data = json.loads(line)
                 movie_id = data['custom_id']
-                response = json.loads(data['response']['body']['choices'][0]['message']['content'])
+                response = json.loads(
+                    data['response']['body']['choices'][0]['message']['content']
+                )
                 
                 characters = Characters(**response)
                 db.add_character_deaths(movie_id, characters.characters)
-                db.update_movie_status(movie_id, ProcessingStatus.COMPLETED)
+                db.update_movie(
+                    movie_id=movie_id,
+                    status=ProcessingStatus.COMPLETED
+                )
                 
             except Exception as e:
                 logging.error(f"Error processing result for movie {movie_id}: {e}")
-                db.update_movie_status(movie_id, ProcessingStatus.FAILED)
+                db.update_movie(
+                    movie_id=movie_id,
+                    status=ProcessingStatus.FAILED
+                )
         
         logging.info(f"Processed results for batch {batch_id}")
         
@@ -49,9 +56,12 @@ def retrieve_batch_results(batch_id: str, db: DatabaseHandler,
 
 def main():
     parser = argparse.ArgumentParser(description="Retrieve batch results")
-    parser.add_argument("--db-path", type=Path, required=True)
-    parser.add_argument("--batch-num", type=int, required=True, help="Batch number to retrieve (indexed from 1)")
-    parser.add_argument("--batch-dir", type=Path, required=True)
+    parser.add_argument("--db-path", type=Path, required=True, 
+                        help="Path to the database")
+    parser.add_argument("--batch-num", type=int, required=True, 
+                        help="Batch number to retrieve (indexed from 1)")
+    parser.add_argument("--batch-dir", type=Path, required=True, 
+                        help="Path to the batch directory")
     args = parser.parse_args()
     
     batch_ids = get_batch_ids(args.batch_dir)
