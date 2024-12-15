@@ -1,0 +1,24 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "trope_clustering"
+version = "0.1.0"
+description = "Cluster tropes using OpenAI"
+requires-python = ">=3.12"
+dependencies = [
+    "openai",
+    "pandas",
+    "sqlmodel",
+    "tqdm",
+    "python-dotenv",
+    "tiktoken"
+]
+
+[project.scripts]
+trope-clustering-create-batches = "trope_clustering.cli.create_batches:main"
+trope-clustering-process-chat = "trope_clustering.cli.process_chat:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/trope_clustering"]
