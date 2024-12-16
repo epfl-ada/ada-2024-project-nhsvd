@@ -7,6 +7,7 @@ batchinput.jsonl
 
 **/.DS_Store
 .DS_Store
+*.png
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
