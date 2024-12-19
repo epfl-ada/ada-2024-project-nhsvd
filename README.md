@@ -121,7 +121,7 @@ Another way to tackle this problem is simply using a LLM to decide the tropes.
 ## Organization within the Team
 Each team member has an assigned role to ensure efficient progress:
    - Samuli Näppi: Data preprocessing and code reviewing.
-   - Vsevolod Malevannyi: Character death classification.
+   - Vsevolod Malevannyi: Analysis and visualization of mortality index calculation.
    - Duc-Anh Do: Tropes clustering and team coordinating.
    - Hamza Karime & Nizar Ben Mohamed: Analysis, visualization and presentation.
 
