@@ -1,6 +1,6 @@
 # CMU Movie Summary Corpus Analysis by NHSVD
 
-### Final Website : https://cinematic-fate-analytics.lovable.app
+### Final Website with Data Story: https://cinematic-fate-analytics.lovable.app
 
 ### Abstract
 
@@ -104,4 +104,4 @@ The LLM method demonstrates significantly superior performance.
 - Vsevolod Malevannyi: Bags-of-word death matching, analysis(40%).
 - Duc-Anh Do: LLM trope clustering, organizing meetings, merging code.
 - Nizar Ben Mohamed: DPM trope clustering, analysis(%10).
-- Hamza Karime: Proposing the project idea, analysis(40%), making the data story.
+- Hamza Karime: Proposing the project idea, analysis(40%), making the data story & website.
