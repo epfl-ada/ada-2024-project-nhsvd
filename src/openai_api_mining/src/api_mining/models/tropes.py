@@ -1,26 +1,13 @@
-from datetime import datetime
 from enum import Enum
 from typing import List, Optional
 
 from pydantic import BaseModel
-from sqlmodel import Field, Relationship, SQLModel
+from sqlmodel import Relationship, SQLModel, Field
 
-class ProcessingStatus(str, Enum):
-    PENDING = "pending"
-    PROCESSING = "processing"
-    COMPLETED = "completed"
-    FAILED = "failed"
-
-class ProcessingMethod(str, Enum):
-    BATCH = "batch"
-    CHAT = "chat"
-
-class MetadataStatus(str, Enum):
-    COMPLETE = "complete"
-    MISSING_METADATA = "missing_metadata"
-    EMPTY_CHARACTERS = "empty_characters"
+from api_mining.models.core import MovieBase, Character
 
 class Trope(str, Enum):
+    """Defines 100 possible tropes associated with a character."""
     CHOSEN_ONE = "Chosen One"
     RELUCTANT_HERO = "Reluctant Hero"
     ANTIHERO = "Antihero"
@@ -121,31 +108,26 @@ class Trope(str, Enum):
     DREAMER = "Dreamer"
     NO_TROPE = "No Trope"
 
-class Character(BaseModel):
-    name: str
+class TropeCharacter(Character):
+    """Represents a character and their associated trope."""
     trope: Trope
 
-class Characters(BaseModel):
-    characters: List[Character]
+class TropeCharacters(BaseModel):
+    """Contains a list of characters and their associated tropes."""
+    characters: List[TropeCharacter]
 
-class MovieBase(SQLModel):
-    id: str = Field(primary_key=True)
-    metadata_status: MetadataStatus
-    processed_status: ProcessingStatus = Field(default=ProcessingStatus.PENDING)
-    processing_method: Optional[ProcessingMethod] = None
-    batch_id: Optional[str] = None
-    batch_index: Optional[int] = None
-    last_updated: datetime = Field(default_factory=datetime.utcnow)
-
-class Movie(MovieBase, table=True):
-    characters: Optional[List["CharacterDB"]] = Relationship(
+class TropeMovie(MovieBase, table=True):
+    """Represents a movie with associated characters and their tropes."""
+    characters: Optional[List["TropeCharacterDB"]] = Relationship(
         back_populates="movie",
         sa_relationship_kwargs={"cascade": "all, delete-orphan"}
     )
 
-class CharacterDB(SQLModel, table=True):
+class TropeCharacterDB(SQLModel, table=True):
+    """Database model for character trope information."""
+    __tablename__ = "character_tropes"
     id: Optional[int] = Field(default=None, primary_key=True)
-    movie_id: str = Field(foreign_key="movie.id", index=True)
+    movie_id: str = Field(foreign_key="tropemovie.id", index=True)
     name: str
     trope: Trope
-    movie: Movie = Relationship(back_populates="characters")
+    movie: TropeMovie = Relationship(back_populates="characters")

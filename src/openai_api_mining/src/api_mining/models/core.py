@@ -1,33 +1,38 @@
 from datetime import datetime
 from enum import Enum
-from typing import List, Optional
+from typing import Optional
 
 from pydantic import BaseModel
-from sqlmodel import Field, Relationship, SQLModel
+from sqlmodel import Field, SQLModel
+
+class DataType(str, Enum):
+    DEATHS = "deaths"
+    TROPES = "tropes"
 
 class ProcessingStatus(str, Enum):
+    """Processing status of a movie"""
     PENDING = "pending"
     PROCESSING = "processing"
     COMPLETED = "completed"
     FAILED = "failed"
 
 class ProcessingMethod(str, Enum):
+    """Processing method of a movie"""
     BATCH = "batch"
     CHAT = "chat"
 
 class MetadataStatus(str, Enum):
+    """Status of movie character metadata"""
     COMPLETE = "complete"
     MISSING_METADATA = "missing_metadata"
     EMPTY_CHARACTERS = "empty_characters"
 
 class Character(BaseModel):
+    """Base model for a character"""
     name: str
-    dies: bool
-
-class Characters(BaseModel):
-    characters: List[Character]
 
 class MovieBase(SQLModel):
+    """Base model for movie data with processing metadata"""
     id: str = Field(primary_key=True)
     metadata_status: MetadataStatus
     processed_status: ProcessingStatus = Field(default=ProcessingStatus.PENDING)
@@ -37,15 +42,8 @@ class MovieBase(SQLModel):
     token_count: int = Field(default=0)
     last_updated: datetime = Field(default_factory=datetime.utcnow)
 
-class Movie(MovieBase, table=True):
-    characters: Optional[List["CharacterDB"]] = Relationship(
-        back_populates="movie",
-        sa_relationship_kwargs={"cascade": "all, delete-orphan"}
-    )
-
-class CharacterDB(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    movie_id: str = Field(foreign_key="movie.id", index=True)
-    name: str
-    dies: bool
-    movie: Movie = Relationship(back_populates="characters")
+class DatabaseMetadata(SQLModel, table=True):
+    """Metadata for database type and creation time"""
+    id: str = Field(default="metadata", primary_key=True)
+    data_type: DataType
+    created_at: datetime = Field(default_factory=datetime.utcnow)

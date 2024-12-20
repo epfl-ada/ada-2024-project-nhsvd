@@ -1,0 +1,1 @@
+Given a list of character names and a plot summary, extract the information about character deaths.

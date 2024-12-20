@@ -1,0 +1,32 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "api_mining"
+version = "0.1.0"
+description = "Process character data in movie plots using OpenAI"
+requires-python = ">=3.12"
+dependencies = [
+    "openai",
+    "pandas",
+    "sqlmodel",
+    "tqdm",
+    "python-dotenv",
+    "tiktoken"
+]
+
+[project.scripts]
+api-mining-init-db = "api_mining.cli.init_db:main"
+api-mining-create-batches = "api_mining.cli.create_batches:main"
+api-mining-submit-batch = "api_mining.cli.submit_batch:main"
+api-mining-retrieve-batch = "api_mining.cli.retrieve_batch:main"
+api-mining-process-chat = "api_mining.cli.process_chat:main"
+
+[tool.hatch.build]
+include = [
+    "src/api_mining/prompts/*.txt",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/api_mining"]

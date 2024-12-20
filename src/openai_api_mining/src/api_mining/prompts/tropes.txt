@@ -1,12 +1,4 @@
-from typing import Optional, List
-from pathlib import Path
-import json
-
-import pandas as pd
-
-
-SYSTEM_PROMPT = (
-"""<tropes>
+<tropes>
 Chosen One: A character destined for greatness, often with a unique power or lineage.
 Reluctant Hero: Someone forced into heroism despite their initial hesitation.
 Antihero: A protagonist with questionable morals or unconventional methods.
@@ -107,36 +99,4 @@ Wise Elder: A sage figure, often dispensing advice in riddles.
 Dreamer: Lives in their imagination, often disconnected from reality.
 No Trope: A character that doesn't align with any of the tropes above or not enough information.
 </tropes>
-<task>Given a plot summary (and a list of character names), assign a trope from the ones above to each character."</task>"""
-)
-
-def get_summary(input_dir: Path, movie_id: str) -> str:
-    """Get plot summary for a movie"""
-    plot_file = input_dir / f'plot_summaries_{movie_id}.txt'
-    return plot_file.read_text().strip()
-
-def get_char_names(input_dir: Path, movie_id: str) -> List[str]:
-    """Get character names if available"""
-    char_file = input_dir / f'character.metadata_{movie_id}.csv'
-    if not char_file.exists():
-        return []
-    df = pd.read_csv(char_file, usecols=['character_name'])
-    return df['character_name'].dropna().astype(str).tolist()
-
-def construct_user_prompt(plot_summary: str, character_names: Optional[List[str]]) -> str:
-    if character_names:
-        names_str = ', '.join(character_names)
-        return f"<summary>{plot_summary}</summary>\n<names>{names_str}</names>"
-    return f"<summary>{plot_summary}</summary>"
-
-def get_batch_ids(output_dir: Path) -> List[Optional[str]]:
-    """Read batch IDs from JSON file"""
-    batch_file = output_dir / "batch_ids.json"
-    if not batch_file.exists():
-        return []
-    return json.loads(batch_file.read_text())
-
-def save_batch_ids(output_dir: Path, batch_ids: List[Optional[str]]) -> None:
-    """Save batch IDs to JSON file"""
-    batch_file = output_dir / "batch_ids.json"
-    batch_file.write_text(json.dumps(batch_ids))
+<task>Given a plot summary (and a list of character names), assign a trope from the ones above to each character."</task>

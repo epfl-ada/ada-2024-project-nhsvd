@@ -1,4 +1,4 @@
-import argparse
+from argparse import ArgumentParser
 import logging
 from pathlib import Path
 
@@ -7,12 +7,12 @@ from tqdm import tqdm
 from dotenv import load_dotenv
 load_dotenv()
 
-from character_deaths.models import Movie, ProcessingStatus, Characters
-from character_deaths.database import DatabaseHandler
-from character_deaths.utils import (
-    SYSTEM_PROMPT, 
+from api_mining.database.db import create_database_handler
+from api_mining.models.core import ProcessingStatus, MovieBase
+from api_mining.utils.common import (
+    read_system_prompt,
     construct_user_prompt,
-    get_plot_summary, 
+    get_plot_summary,
     get_character_names
 )
 
@@ -23,12 +23,15 @@ logging.basicConfig(
 )
 
 class ChatProcessor:
-    def __init__(self, client: OpenAI, db: DatabaseHandler, input_dir: Path):
+    """Processes movies using the OpenAI chat API and updates the database."""
+    def __init__(self, client: OpenAI, db_path: Path, input_dir: Path):
         self.client = client
-        self.db = db
+        self.db = create_database_handler(db_path)
         self.input_dir = input_dir
+        self.system_prompt = read_system_prompt(self.db.data_type)
 
-    def process_movie(self, movie: Movie) -> bool:
+    def process_movie(self, movie: MovieBase) -> bool:
+        """Process a single movie and update its character data in the database."""
         try:
             character_names = get_character_names(self.input_dir, movie.id)
             plot_summary = get_plot_summary(self.input_dir, movie.id)
@@ -36,17 +39,17 @@ class ChatProcessor:
             completion = self.client.beta.chat.completions.parse(
                 model="gpt-4o-mini",
                 messages=[
-                    {"role": "system", "content": SYSTEM_PROMPT},
+                    {"role": "system", "content": self.system_prompt},
                     {"role": "user", "content": construct_user_prompt(
                         plot_summary=plot_summary,
                         character_names=character_names
                     )}
                 ],
-                response_format=Characters
+                response_format=self.db.Characters
             )
             
             result = completion.choices[0].message.parsed
-            self.db.add_character_deaths(movie.id, result.characters)
+            self.db.add_character_data(movie.id, result.characters)
             return True
 
         except RateLimitError:
@@ -68,6 +71,7 @@ class ChatProcessor:
             return True
 
     def process_pending_movies(self) -> None:
+        """Process all movies with a pending status in the database."""
         with self.db.get_session() as session:
             pending_movies = self.db.get_pending_chat_movies()
         
@@ -81,16 +85,15 @@ class ChatProcessor:
                     break
 
 def main():
-    parser = argparse.ArgumentParser(description="Process movies using chat (real-time) API")
+    parser = ArgumentParser(description="Process movies using chat (real-time) API")
     parser.add_argument("--db-path", type=Path, required=True, 
                         help="Path to the database")
     parser.add_argument("--input-dir", type=Path, default=Path("./data/interim"), 
                         help="Path to the input directory (default: ./data/interim)")
     args = parser.parse_args()
-    
-    db = DatabaseHandler(args.db_path)
+
     client = OpenAI()
-    processor = ChatProcessor(client, db, input_dir=args.input_dir)
+    processor = ChatProcessor(client, args.db_path, args.input_dir)
     processor.process_pending_movies()
 
 if __name__ == "__main__":

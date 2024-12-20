@@ -1,4 +1,4 @@
-import argparse
+from argparse import ArgumentParser
 import logging
 from pathlib import Path
 
@@ -6,9 +6,9 @@ from openai import OpenAI
 from dotenv import load_dotenv
 load_dotenv()
 
-from character_deaths.models import ProcessingStatus
-from character_deaths.database import DatabaseHandler
-from character_deaths.utils.common import get_batch_ids, save_batch_ids
+from api_mining.models.core import ProcessingStatus
+from api_mining.database.db import create_database_handler
+from api_mining.utils.common import get_batch_ids, save_batch_ids
 
 logging.basicConfig(
     level=logging.INFO,
@@ -19,10 +19,12 @@ logging.basicConfig(
 def submit_batch(
     batch_file: Path, 
     batch_num: int, 
-    db: DatabaseHandler, 
+    db_path: Path,
     batch_dir: Path, 
     force: bool = False
 ) -> None:
+    """Submit a batch file for processing and update its status in the database."""
+    db = create_database_handler(db_path)
     batch_ids = get_batch_ids(batch_dir)
     
     while len(batch_ids) < batch_num:
@@ -59,7 +61,7 @@ def submit_batch(
         raise
 
 def main():
-    parser = argparse.ArgumentParser(description="Submit a batch for processing")
+    parser = ArgumentParser(description="Submit a batch for processing")
     parser.add_argument("--db-path", type=Path, required=True, 
                         help="Path to the database")
     parser.add_argument("--batch-num", type=int, required=True, 
@@ -73,9 +75,8 @@ def main():
     batch_file = args.batch_dir / f"batch_{args.batch_num}.jsonl"
     if not batch_file.exists():
         raise FileNotFoundError(f"Batch file not found: {batch_file}")
-    
-    db = DatabaseHandler(args.db_path)
-    submit_batch(batch_file, args.batch_num, db, args.batch_dir, args.force)
+
+    submit_batch(batch_file, args.batch_num, args.db_path, args.batch_dir, args.force)
 
 if __name__ == "__main__":
     main()

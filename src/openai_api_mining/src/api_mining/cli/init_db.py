@@ -1,21 +1,23 @@
-import argparse
+from argparse import ArgumentParser
 import logging
 from pathlib import Path
 
 import pandas as pd
 from tqdm import tqdm
 
-from character_deaths.models import (
+from api_mining.models.core import (
+    DataType,
     MetadataStatus, 
     ProcessingStatus, 
-    ProcessingMethod
+    ProcessingMethod,
+    DatabaseMetadata
 )
-from character_deaths.database import DatabaseHandler
-from character_deaths.utils import (
-    TokenCounter,
+from api_mining.database.db import DeathsDatabaseHandler, TropesDatabaseHandler
+from api_mining.utils.common import (
     get_plot_summary,
     get_character_names,
 )
+from api_mining.utils.token_counter import TokenCounter
 
 logging.basicConfig(
     level=logging.INFO,
@@ -24,12 +26,26 @@ logging.basicConfig(
 )
 
 class DBInitializer:
-    def __init__(self, db: DatabaseHandler, input_dir: Path):
-        self.db = db
+    """Initializes and processes a database with movie and character data."""
+    def __init__(self, db_path: Path, data_type: DataType, input_dir: Path):
+        handlers = {
+            DataType.DEATHS: DeathsDatabaseHandler,
+            DataType.TROPES: TropesDatabaseHandler
+        }
+        handler_class = handlers.get(data_type)
+        if not handler_class:
+            raise ValueError(f"Unknown data type: {data_type}")
+        
+        self.db = handler_class(db_path)
+        with self.db.get_session() as session:
+            metadata = DatabaseMetadata(data_type=data_type)
+            session.add(metadata)
+
         self.input_dir = input_dir
-        self.token_counter = TokenCounter()
+        self.token_counter = TokenCounter(data_type)
 
     def check_character_metadata(self, movie_id: str) -> MetadataStatus:
+        """Check the availability and completeness of character metadata for a movie."""
         char_file = self.input_dir / f'character.metadata_{movie_id}.csv'
         
         if not char_file.exists():
@@ -48,6 +64,7 @@ class DBInitializer:
             return MetadataStatus.MISSING_METADATA
     
     def process_all_movies(self):
+        """Process all movies by reading plot summaries and character metadata."""
         plot_files = list(self.input_dir.glob('plot_summaries_*.txt'))
         
         for plot_file in tqdm(plot_files, desc="Processing movies"):
@@ -79,9 +96,11 @@ class DBInitializer:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Initialize database with all movies")
+    parser = ArgumentParser(description="Initialize database with all movies")
     parser.add_argument("--db-path", type=Path, required=True, 
                         help="Path to the database")
+    parser.add_argument("--data-type", type=DataType, choices=[d.value for d in DataType],
+                       required=True, help="Type of data to store")
     parser.add_argument("--input-dir", type=Path, default=Path("./data/interim"), 
                         help="Path to the input directory (default: ./data/interim)")
     args = parser.parse_args()
@@ -91,8 +110,7 @@ def main():
         logging.warning(f"Database file already exists at {args.db_path}. Exiting.")
         return
 
-    db = DatabaseHandler(args.db_path) 
-    initializer = DBInitializer(db, args.input_dir)
+    initializer = DBInitializer(args.db_path, args.data_type, args.input_dir)
     initializer.process_all_movies()
     logging.info("Database initialization complete.")
 

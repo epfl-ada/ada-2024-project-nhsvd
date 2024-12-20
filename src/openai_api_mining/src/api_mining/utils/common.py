@@ -1,3 +1,4 @@
+import importlib.resources
 from typing import Optional, List
 from pathlib import Path
 import json
@@ -5,9 +6,17 @@ import logging
 
 import pandas as pd
 
-SYSTEM_PROMPT = (
-    "Given a list of character names and a plot summary, extract the information about character deaths."
-)
+from api_mining.models.core import DataType
+
+def read_system_prompt(data_type: DataType) -> str:
+    """Read system prompt from file"""
+    try:
+        prompt_file = data_type + '.txt'
+        with importlib.resources.open_text('api_mining.prompts', prompt_file) as f:
+            return f.read().strip()
+    except Exception as e:
+        logging.error(f"Error reading system prompt from {data_type}.txt: {e}")
+        raise
 
 def get_plot_summary(input_dir: Path, movie_id: str) -> str:
     """Get plot summary for a movie"""
@@ -31,6 +40,7 @@ def get_character_names(input_dir: Path, movie_id: str) -> List[str]:
         return None
 
 def construct_user_prompt(plot_summary: str, character_names: Optional[List[str]]) -> str:
+    """Construct prompt for OpenAI API with plot summary and optional character names"""
     if character_names:
         names_str = ', '.join(character_names)
         return f"<summary>{plot_summary}</summary>\n<names>{names_str}</names>"

@@ -1,4 +1,4 @@
-import argparse
+from argparse import ArgumentParser
 import logging
 import json
 from pathlib import Path
@@ -7,9 +7,9 @@ from openai import OpenAI
 from dotenv import load_dotenv
 load_dotenv()
 
-from character_deaths.models import ProcessingStatus, Characters
-from character_deaths.database import DatabaseHandler
-from character_deaths.utils.common import get_batch_ids
+from api_mining.models.core import ProcessingStatus
+from api_mining.database.db import create_database_handler
+from api_mining.utils.common import get_batch_ids
 
 logging.basicConfig(
     level=logging.INFO,
@@ -17,7 +17,10 @@ logging.basicConfig(
     datefmt='%Y-%m-%d %H:%M:%S'
 )
 
-def retrieve_batch_results(batch_id: str, db: DatabaseHandler, client: OpenAI) -> None:
+def retrieve_batch_results(batch_id: str, db_path: Path, client: OpenAI) -> None:
+    """Retrieve and process results for a completed batch from the OpenAI API."""
+    db = create_database_handler(db_path)
+
     try:
         status = client.batches.retrieve(batch_id)
         if status.status != "completed":
@@ -35,8 +38,8 @@ def retrieve_batch_results(batch_id: str, db: DatabaseHandler, client: OpenAI) -
                     data['response']['body']['choices'][0]['message']['content']
                 )
                 
-                characters = Characters(**response)
-                db.add_character_deaths(movie_id, characters.characters)
+                characters = db.Characters(**response)
+                db.add_character_data(movie_id, characters.characters)
                 db.update_movie(
                     movie_id=movie_id,
                     status=ProcessingStatus.COMPLETED
@@ -55,7 +58,7 @@ def retrieve_batch_results(batch_id: str, db: DatabaseHandler, client: OpenAI) -
         logging.error(f"Error retrieving batch {batch_id}: {e}")
 
 def main():
-    parser = argparse.ArgumentParser(description="Retrieve batch results")
+    parser = ArgumentParser(description="Retrieve batch results")
     parser.add_argument("--db-path", type=Path, required=True, 
                         help="Path to the database")
     parser.add_argument("--batch-num", type=int, required=True, 
@@ -70,10 +73,10 @@ def main():
         return
     
     batch_id = batch_ids[args.batch_num - 1]
-    db = DatabaseHandler(args.db_path)
+
     client = OpenAI()
     
-    retrieve_batch_results(batch_id, db, client)
+    retrieve_batch_results(batch_id, args.db_path, client)
 
 if __name__ == "__main__":
     main()
