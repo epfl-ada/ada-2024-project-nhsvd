@@ -24,7 +24,7 @@ The default and assumed structure of data is as follows:
 ```
 all the preprocessing scripts take `input_dir` and `output_dir` from the CLI.
 
-### Usage
+### Building bag-of-words
 
 1. Parse XML to CSV files:
    ```
@@ -38,4 +38,5 @@ all the preprocessing scripts take `input_dir` and `output_dir` from the CLI.
    ```
    python src/preprocessing/build_char_word_bags.py
    ```
-A member(Samuli Näppi) wrote a faster version of the XML parser in Rust (`src/preprocessing/xml_to_csv`).
+
+### Building databases mined with OpenAI's API
