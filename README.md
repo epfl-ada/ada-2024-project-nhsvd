@@ -123,7 +123,8 @@ Each team member has an assigned role to ensure efficient progress:
    - Samuli Näppi: Data preprocessing and code reviewing.
    - Vsevolod Malevannyi: Analysis and visualization of mortality index calculation.
    - Duc-Anh Do: Tropes clustering and team coordinating.
-   - Hamza Karime & Nizar Ben Mohamed: Analysis, visualization and presentation.
+   - Nizar Ben Mohamed: DPM trope clustering, analysis and visualization.
+   - Hamza Karime: Analysis, visualization and presentation.
 
 ## Questions for TAs
    - How can we quantify the error of death classification (since we do not have access to ground-truth)?
