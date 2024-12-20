@@ -7,7 +7,7 @@ The default and assumed structure of data is as follows:
     |    ├── char_death.db
     |    ├── char_trope.db
     |    └── .csv files version of databases
-    ├── final          <- Data used for final analysis.
+    ├── final          <- Data used for final analysis extracted from the databases.
     |    ├── characters.csv
     |    ├── movies.csv
     |    └── tropes.csv
@@ -40,3 +40,5 @@ all the preprocessing scripts take `input_dir` and `output_dir` from the CLI.
    ```
 
 ### Building databases mined with OpenAI's API
+
+This is documented in `src/openai_api_mining`.
