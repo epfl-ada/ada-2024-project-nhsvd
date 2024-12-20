@@ -1,0 +1,100 @@
+name,description,id
+Chosen One,"A character destined for greatness, often with a unique power or lineage.",CHOSEN_ONE
+Reluctant Hero,Someone forced into heroism despite their initial hesitation.,RELUCTANT_HERO
+Antihero,A protagonist with questionable morals or unconventional methods.,ANTIHERO
+Mentor,"A wise figure who guides the hero, often older and experienced.",MENTOR
+Comic Relief,Provides humor to lighten the story's tone.,COMIC_RELIEF
+Femme Fatale,A seductive and mysterious woman who leads others into danger.,FEMME_FATALE
+Brooding Loner,"A solitary character, often with a tragic past.",BROODING_LONER
+Ingenue,"A naive and innocent character, often young.",INGENUE
+Evil Overlord,A powerful antagonist with ambitions of domination.,EVIL_OVERLORD
+Lovable Rogue,"A charming, morally ambiguous character with a heart of gold.",LOVABLE_ROGUE
+Sidekick,A loyal companion who supports the hero.,SIDEKICK
+Mad Scientist,An eccentric genius with dangerous experiments.,MAD_SCIENTIST
+Tragic Hero,A noble character doomed by a fatal flaw.,TRAGIC_HERO
+Everyman,"A relatable, ordinary character thrust into extraordinary situations.",EVERYMAN
+Jaded Veteran,A battle-weary character who’s seen too much.,JADED_VETERAN
+Noble Savage,"A character untarnished by civilization, with a pure moral compass.",NOBLE_SAVAGE
+Damsel in Distress,"A character needing rescue, traditionally a woman.",DAMSEL_IN_DISTRESS
+Byronic Hero,"Dark, charismatic, and deeply flawed.",BYRONIC_HERO
+Eternal Optimist,"Always positive, no matter how dire the situation.",ETERNAL_OPTIMIST
+Cynical Realist,A pragmatist who often clashes with idealists.,CYNICAL_REALIST
+Underdog,Overcomes great odds despite being underestimated.,UNDERDOG
+Class Clown,Makes jokes to hide insecurities or defuse tension.,CLASS_CLOWN
+Villain with a Heart,An antagonist with redeeming qualities.,VILLAIN_WITH_A_HEART
+Warrior Poet,Combines physical prowess with intellectual depth.,WARRIOR_POET
+Rebel Leader,Fights against oppressive systems or regimes.,REBEL_LEADER
+Protective Parent,Driven by love for their child.,PROTECTIVE_PARENT
+Scheming Manipulator,A master of deception and plotting.,SCHEMING_MANIPULATOR
+Innocent Child,A beacon of purity and hope.,INNOCENT_CHILD
+Loyal Butler,A steadfast servant with hidden wisdom or skills.,LOYAL_BUTLER
+Brash Rookie,Overconfident but inexperienced.,BRASH_ROOKIE
+Overbearing Boss,"Demanding, often humorous authority figure.",OVERBEARING_BOSS
+Cowardly Lion,Afraid of danger but capable of bravery.,COWARDLY_LION
+Tortured Artist,Fueled by inner turmoil to create masterpieces.,TORTURED_ARTIST
+Golden Boy/Girl,Excels at everything and loved by all.,GOLDEN_BOY_GIRL
+Seductive Villain,Uses allure to achieve nefarious goals.,SEDUCTIVE_VILLAIN
+Tech Genius,Solves problems with technological savvy.,TECH_GENIUS
+Wild Card,"Unpredictable, with motives and actions that keep everyone guessing.",WILD_CARD
+Crusader,Fights tirelessly for a cause they believe in.,CRUSADER
+Reformed Criminal,A former villain seeking redemption.,REFORMED_CRIMINAL
+Eccentric Millionaire,Wealthy and unconventional.,ECCENTRIC_MILLIONAIRE
+Trickster,"Loves causing chaos, often to teach lessons or reveal truths.",TRICKSTER
+Dutiful Soldier,Obeys orders and adheres to strict codes of conduct.,DUTIFUL_SOLDIER
+Gentle Giant,"Big and intimidating, but kind and tender-hearted.",GENTLE_GIANT
+Outcast,Shunned by society but finds strength in their uniqueness.,OUTCAST
+Vengeful Spirit,Motivated by revenge for a wrong done to them.,VENGEFUL_SPIRIT
+Obsessive Detective,Relentless in pursuit of justice or the truth.,OBSESSIVE_DETECTIVE
+Happy-Go-Lucky Adventurer,Lives for the thrill of the journey.,HAPPY_GO_LUCKY_ADVENTURER
+Schemer,"Always plotting, often for personal gain.",SCHEMER
+Mentor Turned Villain,A guide who becomes corrupted or misguided.,MENTOR_TURNED_VILLAIN
+Hot-Headed Fighter,"Quick to anger and action, often impulsive.",HOT_HEADED_FIGHTER
+Reluctant Royal,A noble figure who doesn't want their throne.,RELUCTANT_ROYAL
+Blind Seer,A character who lacks sight but sees beyond the physical world.,BLIND_SEER
+Tragic Lover,Doomed to heartbreak or loss in romance.,TRAGIC_LOVER
+Stoic Warrior,Emotionally reserved but incredibly dependable.,STOIC_WARRIOR
+Carefree Drifter,"A wanderer with no ties, living in the moment.",CAREFREE_DRIFTER
+Quirky Neighbor,An odd but endearing presence in the protagonist’s life.,QUIRKY_NEIGHBOR
+Social Climber,Obsessed with status and willing to do anything to achieve it.,SOCIAL_CLIMBER
+Devout Believer,Motivated by faith or ideology.,DEVOUT_BELIEVER
+Unscrupulous Businessperson,Greedy and willing to cross any line for profit.,UNSCRUPULOUS_BUSINESSPERSON
+Quiet Genius,Underestimated due to their reserved nature.,QUIET_GENIUS
+Battle-Hardened Leader,Commands respect through their experience.,BATTLE_HARDENED_LEADER
+Overconfident Rookie,Bold but often naive.,OVERCONFIDENT_ROOKIE
+Misunderstood Monster,"Feared due to appearance or abilities, but kind at heart.",MISUNDERSTOOD_MONSTER
+Cunning Survivor,Does whatever it takes to stay alive.,CUNNING_SURVIVOR
+Romantic Dreamer,Longs for love and beauty in the world.,ROMANTIC_DREAMER
+Charismatic Cult Leader,Inspires fanatic devotion.,CHARISMATIC_CULT_LEADER
+Hardboiled Detective,"Cynical, street-smart investigator.",HARDBOILED_DETECTIVE
+Nurturing Healer,Devoted to caring for others.,NURTURING_HEALER
+Visionary Inventor,"Dreams big, often ahead of their time.",VISIONARY_INVENTOR
+Reserved Scholar,"A thinker, not a fighter.",RESERVED_SCHOLAR
+Vain Narcissist,Obsessed with their own appearance and status.,VAIN_NARCISSIST
+Elder Statesman,"Wise, respected, and often a peacemaker.",ELDER_STATESMAN
+Bumbling Fool,Always making mistakes but with a good heart.,BUMBLING_FOOL
+Sarcastic Snarker,Quick-witted with biting humor.,SARCASTIC_SNARKER
+Heroic Sacrifice,Gives their life for the greater good.,HEROIC_SACRIFICE
+Idealistic Youth,"Sees the world as it could be, not as it is.",IDEALISTIC_YOUTH
+Calculating Strategist,Always thinking several steps ahead.,CALCULATING_STRATEGIST
+Paranoid Conspiracy Theorist,Sees hidden plots everywhere.,PARANOID_CONSPIRACY_THEORIST
+Strong Silent Type,Speaks little but acts decisively.,STRONG_SILENT_TYPE
+Hopeless Romantic,"Constantly seeking love, often to their detriment.",HOPELESS_ROMANTIC
+Manipulative Politician,Skilled at bending people to their will.,MANIPULATIVE_POLITICIAN
+Dark Messiah,A savior figure with questionable methods or morals.,DARK_MESSIAH
+Wild Child,"Untamed, free-spirited, and unpredictable.",WILD_CHILD
+Unassuming Hero,An ordinary person who rises to extraordinary circumstances.,UNASSUMING_HERO
+Sinister Butler,A servant with hidden motives or a dark past.,SINISTER_BUTLER
+Thrill-Seeking Daredevil,Lives for danger and excitement.,THRILL_SEEKING_DAREDEVIL
+Starry-Eyed Prodigy,Talented and ambitious but inexperienced.,STARRY_EYED_PRODIGY
+Bitter Rival,Obsessed with outdoing or defeating the protagonist.,BITTER_RIVAL
+Lost Soul,"Searching for meaning, often plagued by inner demons.",LOST_SOUL
+Peaceful Pacifist,Avoids violence at all costs.,PEACEFUL_PACIFIST
+Obsessed Fan,Takes admiration to dangerous extremes.,OBSESSED_FAN
+Manipulative Lover,Uses romance as a tool for control.,MANIPULATIVE_LOVER
+Guardian Angel,"Protects others, often at great personal cost.",GUARDIAN_ANGEL
+Absent-Minded Professor,Brilliant but scatterbrained.,ABSENT_MINDED_PROFESSOR
+Beast Within,Struggles to control a literal or metaphorical monster inside.,BEAST_WITHIN
+Charmer,Wins others over with wit and charisma.,CHARMER
+Wise Elder,"A sage figure, often dispensing advice in riddles.",WISE_ELDER
+Dreamer,"Lives in their imagination, often disconnected from reality.",DREAMER
+No Trope,A character that doesn't align with any of the tropes above or not enough information.,NO_TROPE

@@ -1,5 +1,8 @@
 # ignore data in version control
-data/
+data/raw
+data/databases
+data/interim
+data/processed
 
 # ignore OpenAI batch ID and input files
 batch_id.txt
