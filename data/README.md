@@ -3,8 +3,16 @@
 The default and assumed structure of data is as follows:
 ```
 ├── data
+    ├── databases      <- OpenAI databases and intermediate tables.
+    |    ├── char_death.db
+    |    ├── char_trope.db
+    |    └── .csv files version of databases
+    ├── final          <- Data used for final analysis.
+    |    ├── characters.csv
+    |    ├── movies.csv
+    |    └── tropes.csv
     ├── interim        <- Intermediate data that has been transformed.
-    ├── processed      <- Final data used for modeling.
+    ├── processed      <- Final data for naive methods.
     └── raw            <- Original immutable data.
         ├── character.metadata.tsv
         ├── movie.metadata.tsv
