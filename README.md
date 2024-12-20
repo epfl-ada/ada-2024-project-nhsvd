@@ -98,8 +98,8 @@ The LLM method demonstrates significantly superior performance.
    - **Actor-Specific Analysis**: By calculating mortality rates for certain actors, we can identify those with high on-screen death frequencies (e.g., Sean Bean).
 
 ## Organization within the Team
-- Samuli Näppi: Data preprocessing, creating the OpenAI's API framework, LLM death classification, analysis.
-- Vsevolod Malevannyi: Bags-of-word death matching, analysis.
+- Samuli Näppi: Data preprocessing, creating the OpenAI's API framework, LLM death classification, analysis(10%).
+- Vsevolod Malevannyi: Bags-of-word death matching, analysis(40%).
 - Duc-Anh Do: LLM trope clustering, organizing meetings, merging code.
-- Nizar Ben Mohamed: DPM trope clustering, analysis.
-- Hamza Karime: Proposing the project idea, making the data story.
+- Nizar Ben Mohamed: DPM trope clustering, analysis(%10).
+- Hamza Karime: Proposing the project idea, analysis(40%), making the data story.
