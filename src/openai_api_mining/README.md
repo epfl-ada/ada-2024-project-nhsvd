@@ -29,7 +29,7 @@ api-mining-init-db
 
 Arguments:
 
--- `--data-type`: Type of data to store (character deaths or tropes, one DB is designed to be used for only one type of data).
+- `--data-type`: Type of data to store (character deaths or tropes, one DB is designed to be used for only one type of data).
 - `--db-path`: Path where the database will be saved.
 - `--input-dir`: Path to the directory containing the *split* plot summaries and character metadata (one file per movie, created by `src/preprocessing/split_plot_summaries.py` and `src/preprocessing/split_char_metadata.py`).
 
